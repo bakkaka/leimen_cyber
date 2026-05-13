@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des modules{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestion des modules</h1>
+        <a href="{{ path('app_admin_module_new') }}" class="btn btn-primary">+ Nouveau module</a>
+    </div>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>Cours</th>
+                <th>Ordre</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for module in modules %}
+                <tr>
+                    <td>{{ module.id }}</td>
+                    <td>{{ module.title }}</td>
+                    <td>{{ module.course.title }}</td>
+                    <td>{{ module.orderNumber }}</td>
+                    <td>
+                        <a href="{{ path('app_admin_module_edit', {'id': module.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                        <form action="{{ path('app_admin_module_delete', {'id': module.id}) }}" method="post" style="display:inline-block">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ module.id) }}">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ?')">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

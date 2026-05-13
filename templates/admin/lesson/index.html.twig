@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des leçons{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestion des leçons</h1>
+        <a href="{{ path('app_admin_lesson_new') }}" class="btn btn-primary">+ Nouvelle leçon</a>
+    </div>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>Module</th>
+                <th>Durée</th>
+                <th>Ordre</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lesson in lessons %}
+                <tr>
+                    <td>{{ lesson.id }}</td>
+                    <td>{{ lesson.title }}</td>
+                    <td>{{ lesson.module.title }}</td>
+                    <td>{{ lesson.duration }} sec</td>
+                    <td>{{ lesson.orderNumber }}</td>
+                    <td>
+                        <a href="{{ path('app_admin_lesson_edit', {'id': lesson.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                        <form action="{{ path('app_admin_lesson_delete', {'id': lesson.id}) }}" method="post" style="display:inline-block">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ lesson.id) }}">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ?')">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

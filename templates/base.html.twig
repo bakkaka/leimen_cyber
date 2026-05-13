@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#FF7F00">
+    
+    <title>{% block title %}Cyber Formation Maroc - Formation Cybersécurité{% endblock %}</title>
+    <meta name="description" content="{% block description %}Formation cybersécurité au Maroc. Cours pratiques en hacking éthique, protection des données et sécurité réseau. Certificat officiel offert.{% endblock %}">
+    <meta name="keywords" content="cybersécurité, formation cybersécurité Maroc, hacking éthique, sécurité informatique, protection des données, cours cybersécurité">
+    <meta name="author" content="Aziz Mostafaoui">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ app.request.uri }}{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Cyber Formation Maroc - Maîtrisez la Cybersécurité{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Devenez expert en cybersécurité. Formations 100% pratiques. Certificat offert. +50 étudiants déjà formés.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ absolute_url(asset('assets/images/cyber-og.jpg')) }}{% endblock %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:site_name" content="Cyber Formation Maroc">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@cyberformation">
+    <meta name="twitter:title" content="{% block twitter_title %}Cyber Formation Maroc{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Formation cybersécurité au Maroc. Cours pratiques en hacking éthique.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ absolute_url(asset('assets/images/cyber-twitter.jpg')) }}{% endblock %}">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="{{ asset('assets/images/favicon.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/images/apple-touch-icon.png') }}">
+    
+    <!-- Preload des polices -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    <!-- AOS CSS (animations) -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    
+    <!-- Video.js CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/video.js@8.23.7/dist/video-js.min.css" rel="stylesheet">
+    
+    <!-- Schema.org JSON-LD pour SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "EducationalOrganization",
+        "name": "Cyber Formation Maroc",
+        "url": "{{ app.request.schemeAndHttpHost }}",
+        "logo": "{{ absolute_url(asset('assets/images/logo.png')) }}",
+        "description": "Formation professionnelle en cybersécurité au Maroc",
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "MA"
+        },
+        "sameAs": [
+            "https://www.facebook.com/cyberformation",
+            "https://www.linkedin.com/company/cyberformation",
+            "https://twitter.com/cyberformation"
+        ]
+    }
+    </script>
+    
+    {% block stylesheets %}
+        {{ importmap('app') }}
+    {% endblock %}
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KFVXQD95"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: linear-gradient(135deg, #FF7F00, #E67300);">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3" href="{{ path('app_home') }}">
+                <i class="bi bi-shield-lock-fill me-2"></i>
+                Cyber<span class="fw-normal">Formation.ma</span>
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-label="Menu">
+                <i class="bi bi-list fs-1 text-white"></i>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-semibold px-3" href="{{ path('app_home') }}">
+                            <i class="bi bi-house-door me-1"></i>Accueil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-semibold px-3" href="{{ path('app_course_index') }}">
+                            <i class="bi bi-book me-1"></i>Formations
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-semibold px-3" href="#">
+                            <i class="bi bi-newspaper me-1"></i>Blog
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-semibold px-3" href="#">
+                            <i class="bi bi-envelope me-1"></i>Contact
+                        </a>
+                    </li>
+                    {% if app.user %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white fw-semibold px-3" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle me-1"></i>
+                                {{ app.user.fullName|default(app.user.email) }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
+                                <li>
+                                    <a class="dropdown-item" href="{{ path('app_profile') }}">
+                                        <i class="bi bi-person me-2"></i>Mon profil
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ path('app_my_courses') }}">
+                                        <i class="bi bi-book me-2"></i>Mes formations
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ path('app_progress') }}">
+                                        <i class="bi bi-graph-up me-2"></i>Ma progression
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link text-white fw-semibold px-3" href="{{ path('app_login') }}">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Connexion
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-light rounded-pill px-4 ms-2" href="{{ path('app_register') }}" style="color: #FF7F00; font-weight: 600;">
+                                <i class="bi bi-person-plus me-1"></i>Inscription
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Messages Flash -->
+    <div class="flash-messages">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} alert-dismissible fade show m-3 rounded-3 shadow-sm" role="alert">
+                    <i class="bi bi-{% if label == 'success' %}check-circle-fill{% elseif label == 'danger' %}exclamation-triangle-fill{% elseif label == 'warning' %}exclamation-circle-fill{% else %}info-circle-fill{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    
+    <!-- Contenu principal -->
+    <main>
+        {% block body %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer-cyber" style="background: #0a0e27; color: white; padding: 60px 0 30px; margin-top: 60px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">
+                        <i class="bi bi-shield-lock-fill me-2" style="color: #FF7F00;"></i>
+                        CyberFormation.ma
+                    </h5>
+                    <p class="opacity-75">
+                        Formation professionnelle en cybersécurité au Maroc. 
+                        Devenez expert et protégez vos données avec nos formateurs certifiés.
+                    </p>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#" class="opacity-75" style="color: white;" aria-label="Facebook">
+                            <i class="bi bi-facebook fs-5"></i>
+                        </a>
+                        <a href="#" class="opacity-75" style="color: white;" aria-label="LinkedIn">
+                            <i class="bi bi-linkedin fs-5"></i>
+                        </a>
+                        <a href="#" class="opacity-75" style="color: white;" aria-label="Twitter">
+                            <i class="bi bi-twitter-x fs-5"></i>
+                        </a>
+                        <a href="#" class="opacity-75" style="color: white;" aria-label="Instagram">
+                            <i class="bi bi-instagram fs-5"></i>
+                        </a>
+                        <a href="#" class="opacity-75" style="color: white;" aria-label="YouTube">
+                            <i class="bi bi-youtube fs-5"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-md-2 mb-4">
+                    <h6 class="mb-3 fw-bold">Navigation</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{{ path('app_home') }}" class="text-decoration-none opacity-75" style="color: white;">Accueil</a></li>
+                        <li class="mb-2"><a href="{{ path('app_course_index') }}" class="text-decoration-none opacity-75" style="color: white;">Formations</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none opacity-75" style="color: white;">Blog</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none opacity-75" style="color: white;">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <h6 class="mb-3 fw-bold">Formations</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-decoration-none opacity-75" style="color: white;">🟢 Débutant</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none opacity-75" style="color: white;">🟡 Intermédiaire</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none opacity-75" style="color: white;">🔴 Avancé</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none opacity-75" style="color: white;">🎓 Hacking Éthique</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <h6 class="mb-3 fw-bold">Contact</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="tel:+212676475435" class="text-decoration-none opacity-75" style="color: white;">
+                                <i class="bi bi-phone me-2"></i>+212 676-475-435
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="mailto:contact@cyberformation.ma" class="text-decoration-none opacity-75" style="color: white;">
+                                <i class="bi bi-envelope me-2"></i>contact@cyberformation.ma
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <span class="opacity-75">
+                                <i class="bi bi-geo-alt me-2"></i>Casablanca, Maroc
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="my-4 opacity-25">
+            
+            <div class="text-center">
+                <p class="mb-0 opacity-75 small">
+                    &copy; {{ "now"|date("Y") }} Cyber Formation Maroc. Tous droits réservés.
+                </p>
+                <p class="mb-0 opacity-50 small mt-2">
+                    <a href="#" class="text-decoration-none opacity-50" style="color: white;">Mentions légales</a> |
+                    <a href="#" class="text-decoration-none opacity-50" style="color: white;">CGV</a> |
+                    <a href="#" class="text-decoration-none opacity-50" style="color: white;">Politique de confidentialité</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS JS (animations) -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                once: true,
+                offset: 100,
+                disable: window.innerWidth < 768
+            });
+        });
+    </script>
+    
+    <!-- Scripts personnalisés -->
+    {% block javascripts %}
+        {{ importmap('app') }}
+    {% endblock %}
+    
+    <!-- Facebook Pixel Code (si nécessaire) -->
+    <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', 'VOTRE_PIXEL_ID_ICI');
+        fbq('track', 'PageView');
+    </script>
+    <noscript>
+        <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=VOTRE_PIXEL_ID_ICI&ev=PageView&noscript=1"/>
+    </noscript>
+</body>
+</html>

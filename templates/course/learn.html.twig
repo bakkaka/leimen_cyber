@@ -1,0 +1,117 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ lesson.title }} - {{ course.title }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- SIDEBAR GAUCHE -->
+        <div class="col-md-3 bg-light p-3" style="height: 100vh; overflow-y: auto;">
+            <h5 class="mb-3">{{ course.title }}</h5>
+            
+            <div class="progress mb-3">
+                <div class="progress-bar bg-success" role="progressbar" 
+                     style="width: {{ stats.percentage|default(0) }}%">
+                    {{ stats.percentage|default(0) }}%
+                </div>
+            </div>
+            <small class="text-muted">{{ stats.completed|default(0) }}/{{ stats.total|default(0) }} leçons</small>
+            
+            {% for module in course.modules %}
+                <div class="mb-3 mt-3">
+                    <strong>{{ module.title }}</strong>
+                    <ul class="list-unstyled ms-3">
+                        {% for l in module.lessons %}
+                            <li class="mb-2">
+                                {% if l.id == lesson.id %}
+                                    <strong>▶ {{ l.title }}</strong>
+                                {% else %}
+                                    <a href="{{ path('app_course_lesson', {'courseSlug': course.slug, 'lessonId': l.id}) }}">
+                                        {{ l.title }}
+                                    </a>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- CONTENU PRINCIPAL -->
+        <div class="col-md-9 p-4">
+            <h1 class="mb-4">{{ lesson.title }}</h1>
+            
+            {# VIDÉO CENTRÉE #}
+            <div class="mb-4">
+                <iframe width="100%" height="400" src="{{ lesson.videoUrl }}" frameborder="0" allowfullscreen></iframe>
+            </div>
+            
+            {# TEASER #}
+            {% if lesson.teaser %}
+                <div class="alert alert-info mb-4">
+                    {{ lesson.teaser }}
+                </div>
+            {% endif %}
+            
+            {# CONTENU TEXTE #}
+            <div class="mb-4">
+                {{ lesson.content|raw }}
+            </div>
+            
+            {# POINTS CLÉS #}
+            {% if lesson.keyTakeaways is not empty %}
+                <div class="card mb-4 border-success">
+                    <div class="card-header bg-success text-white">Points clés à retenir</div>
+                    <div class="card-body">
+                        <ul>
+                            {% for point in lesson.keyTakeaways %}
+                                <li>{{ point }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+            
+            {# NAVIGATION #}
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <div>
+                    {% if prevLesson %}
+                        <a href="{{ path('app_course_lesson', {'courseSlug': course.slug, 'lessonId': prevLesson.id}) }}" class="btn btn-secondary">
+                            ← Leçon précédente
+                        </a>
+                    {% else %}
+                        <span></span>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    {% if not progress.completed %}
+                        <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('complete_' ~ lesson.id) }}">
+                            <button type="submit" class="btn btn-success">
+                                ✅ Marquer comme terminée
+                            </button>
+                        </form>
+                    {% else %}
+                        <span class="badge bg-success p-2">
+                            ✅ Terminée le {{ progress.completedAt|date('d/m/Y H:i') }}
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    {% if nextLesson %}
+                        <a href="{{ path('app_course_lesson', {'courseSlug': course.slug, 'lessonId': nextLesson.id}) }}" class="btn btn-primary">
+                            Leçon suivante →
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_course_show', {'slug': course.slug}) }}" class="btn btn-warning">
+                            🎓 Terminer la formation
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

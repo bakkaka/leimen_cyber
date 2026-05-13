@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ course.title }} - Cyber Formation Maroc{% endblock %}
+
+{% block body %}
+<div class="hero-section" style="padding: 60px 0;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">{{ course.title }}</h1>
+                <p class="lead text-muted">{{ course.shortDescription|default(course.description|slice(0, 200)) }}</p>
+                <div class="d-flex gap-3 mt-4">
+                    <div><i class="bi bi-clock-history" style="color: #FF7F00;"></i> {{ course.duration }} min</div>
+                    <div><i class="bi bi-folder" style="color: #FF7F00;"></i> {{ course.modules|length }} modules</div>
+                    <div><i class="bi bi-play-circle" style="color: #FF7F00;"></i> {{ course.modules|reduce((total, module) => total + module.lessons|length, 0) }} leçons</div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-body p-4 text-center">
+                        <h2 class="text-primary mb-3">{{ (course.price / 100)|number_format(0, ',', ' ') }} MAD</h2>
+                        
+                        {% set isEnrolled = false %}
+                        {% set userProgress = 0 %}
+                        {% if app.user %}
+                            {% for enrollment in app.user.enrollments %}
+                                {% if enrollment.course.id == course.id %}
+                                    {% set isEnrolled = true %}
+                                    {% set userProgress = enrollment.progress %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        
+                        {% if not app.user %}
+                            <a href="{{ path('app_login') }}" class="btn-cyber w-100 py-2">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter pour vous inscrire
+                            </a>
+                        {% elseif isEnrolled %}
+                            <a href="{{ path('app_course_learn', {slug: course.slug}) }}" class="btn-cyber w-100 py-2">
+                                <i class="bi bi-play-circle me-2"></i>Continuer la formation
+                            </a>
+                            <div class="progress-cyber mt-2">
+                                <div class="progress-cyber-bar" style="width: {{ userProgress }}%"></div>
+                            </div>
+                            <small class="text-muted">{{ userProgress }}% complété</small>
+                        {% else %}
+                            <a href="{{ path('app_stripe_checkout', {id: course.id}) }}" class="btn-cyber w-100 py-2">
+                                <i class="bi bi-credit-card me-2"></i>S'inscrire maintenant
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h3>Description</h3>
+                    {{ course.description|raw }}
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h3>Programme</h3>
+                    {% for module in course.modules %}
+                        <div class="border rounded-3 mb-3">
+                            <div class="p-3 bg-light">
+                                <strong>Module {{ module.orderNumber }} : {{ module.title }}</strong>
+                                <br><small>{{ module.lessons|length }} leçons</small>
+                            </div>
+                            <div class="p-3">
+                                {% for lesson in module.lessons %}
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <div><i class="bi bi-play-circle me-2" style="color: #FF7F00;"></i> {{ lesson.title }}</div>
+                                        <small>{{ lesson.duration }} min</small>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

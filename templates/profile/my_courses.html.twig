@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes formations - Cyber Formation Maroc{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <h1 class="mb-4">Mes formations</h1>
+    
+    {% if enrollments|length > 0 %}
+        <div class="row">
+            {% for enrollment in enrollments %}
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm rounded-4">
+                        <div class="card-body">
+                            <h3>{{ enrollment.course.title }}</h3>
+                            <div class="progress-cyber mb-2">
+                                <div class="progress-cyber-bar" style="width: {{ enrollment.progress }}%"></div>
+                            </div>
+                            <p class="text-muted">{{ enrollment.progress }}% complété</p>
+                            <a href="{{ path('app_course_learn', {slug: enrollment.course.slug}) }}" class="btn-cyber">
+                                <i class="bi bi-play-circle me-2"></i>Continuer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="mt-4 alert alert-info">
+            <strong>Statistiques :</strong>
+            Total: {{ totalCourses }} formation(s) |
+            Terminées: {{ completedCourses }} |
+            Progression moyenne: {{ averageProgress }}%
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            Vous n'êtes inscrit à aucune formation.
+            <a href="{{ path('app_course_index') }}">Découvrir les formations</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

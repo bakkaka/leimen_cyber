@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ lesson.title }} - {{ course.title }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar gauche -->
+        <div class="col-md-4 col-lg-3">
+            <div class="card shadow-sm rounded-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <div class="progress-cyber mb-2">
+                        <div class="progress-cyber-bar" style="width: {{ globalProgress }}%"></div>
+                    </div>
+                    <small class="text-muted">{{ globalProgress }}% complété</small>
+                    <hr>
+                    
+                    {% for module in course.modules %}
+                        <div class="mb-3">
+                            <strong>Module {{ module.orderNumber }} : {{ module.title }}</strong>
+                            <div class="ms-3 mt-2">
+                                {% for l in module.lessons %}
+                                    <a href="{{ path('app_course_lesson', {courseSlug: course.slug, lessonId: l.id}) }}" 
+                                       class="d-block mb-2 text-decoration-none {% if l.id == lesson.id %}text-primary fw-bold{% else %}text-dark{% endif %}">
+                                        <i class="bi bi-{% if l.id in completedLessonsIds %}check-circle-fill text-success{% else %}play-circle{% endif %} me-2"></i>
+                                        {{ l.title }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contenu principal -->
+        <div class="col-md-8 col-lg-9">
+            <div class="card shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h2>{{ lesson.title }}</h2>
+                    
+                    {% if lesson.teaser %}
+                        <div class="alert alert-info">
+                            {{ lesson.teaser }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Lecteur vidéo simple -->
+                    <div class="ratio ratio-16x9 mb-4">
+                        <iframe src="{{ lesson.videoUrl }}" allowfullscreen></iframe>
+                    </div>
+                    
+                    {% if lesson.content %}
+                        <div class="mt-4">
+                            {{ lesson.content|raw }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Navigation -->
+                    <div class="d-flex justify-content-between mt-4">
+                        {% if previousLesson %}
+                            <a href="{{ path('app_course_lesson', {courseSlug: course.slug, lessonId: previousLesson.id}) }}" class="btn-cyber-outline">
+                                ← Leçon précédente
+                            </a>
+                        {% else %}
+                            <div></div>
+                        {% endif %}
+                        
+                        {% if nextLesson %}
+                            <a href="{{ path('app_course_lesson', {courseSlug: course.slug, lessonId: nextLesson.id}) }}" class="btn-cyber">
+                                Leçon suivante →
+                            </a>
+                        {% else %}
+                            <a href="{{ path('app_course_show', {slug: course.slug}) }}" class="btn-cyber">
+                                Terminer le cours 🏆
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos formations - Cyber Formation Maroc{% endblock %}
+
+{% block body %}
+<div class="hero-section" style="padding: 60px 0;">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <div class="hero-badge">🔥 Formations certifiantes 🔥</div>
+                <h1 class="hero-title">Nos formations en cybersécurité</h1>
+                <p class="lead text-white-50">
+                    Du débutant à l'expert, trouvez la formation qui vous correspond.
+                    <strong class="text-white">Certificat officiel offert !</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    {% set levels = [
+        {'name': 'beginner', 'label': 'Débutant', 'icon': 'star-fill', 'color': 'success', 'courses': beginnerCourses},
+        {'name': 'intermediate', 'label': 'Intermédiaire', 'icon': 'star-half', 'color': 'warning', 'courses': intermediateCourses},
+        {'name': 'advanced', 'label': 'Avancé', 'icon': 'gem', 'color': 'danger', 'courses': advancedCourses}
+    ] %}
+    
+    {% for level in levels %}
+        {% if level.courses|length > 0 %}
+        <div class="mb-5">
+            <h2 class="mb-4">
+                <i class="bi bi-{{ level.icon }} text-{{ level.color }} me-2"></i>
+                Niveau {{ level.label }}
+                <span class="badge bg-{{ level.color }} ms-2">{{ level.courses|length }} formations</span>
+            </h2>
+            <div class="row">
+                {% for course in level.courses %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="course-card">
+                        <div class="course-image">
+                            {% if course.imageUrl %}
+                                <img src="{{ course.imageUrl }}" alt="{{ course.title }}" loading="lazy">
+                            {% else %}
+                                <i class="bi bi-shield-shaded display-1 text-white-50"></i>
+                            {% endif %}
+                            <span class="course-badge badge-{{ level.name }}">{{ level.label }}</span>
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">{{ course.title }}</h3>
+                            <div class="course-description">
+                                {{ course.shortDescription|default(course.description|slice(0, 100)) }}...
+                            </div>
+                            <div class="course-meta">
+                                <span><i class="bi bi-clock"></i> {{ course.duration }} min</span>
+                                <span><i class="bi bi-play-circle"></i> {{ course.modules|length }} modules</span>
+                            </div>
+                            <div class="course-price">
+                                {{ (course.price / 100)|number_format(0, ',', ' ') }} MAD
+                            </div>
+                            <a href="{{ path('app_course_show', {'slug': course.slug}) }}" class="btn-cyber w-100 text-center">
+                                📖 Voir les détails
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}

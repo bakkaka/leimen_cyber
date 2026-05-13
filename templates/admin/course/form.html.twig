@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+    <h1>{{ title }}</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.title) }}
+        {{ form_row(form.shortDescription) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.level) }}
+        {{ form_row(form.price) }}
+        {{ form_row(form.duration) }}
+        {{ form_row(form.whatYouWillLearn) }}
+        {{ form_row(form.requirements) }}
+        {{ form_row(form.targetAudience) }}
+        {{ form_row(form.hasCertificate) }}
+        {{ form_row(form.isPublished) }}
+
+        <button type="submit">Enregistrer</button>
+        <a href="{{ path('app_admin_courses') }}">Annuler</a>
+    {{ form_end(form) }}
+{% endblock %}

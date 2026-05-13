@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>{{ title }}</h1>
+    
+    <form method="post">
+        <div class="mb-3">
+            <label class="form-label">Titre de la leçon</label>
+            <input type="text" name="title" class="form-control" value="{{ lesson.title }}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Contenu (HTML autorisé)</label>
+            <textarea name="content" class="form-control" rows="10">{{ lesson.content }}</textarea>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">URL de la vidéo (YouTube)</label>
+            <input type="text" name="video_url" class="form-control" value="{{ lesson.videoUrl }}" placeholder="https://www.youtube.com/embed/...">
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Durée (secondes)</label>
+            <input type="number" name="duration" class="form-control" value="{{ lesson.duration }}">
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Numéro d'ordre</label>
+            <input type="number" name="order_number" class="form-control" value="{{ lesson.orderNumber }}">
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Module associé</label>
+            <select name="module_id" class="form-control" required>
+                <option value="">Sélectionner un module</option>
+                {% for module in modules %}
+                    <option value="{{ module.id }}" {% if lesson.module and lesson.module.id == module.id %}selected{% endif %}>
+                        {{ module.course.title }} - {{ module.title }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Enregistrer</button>
+        <a href="{{ path('app_admin_lessons') }}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

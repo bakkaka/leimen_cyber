@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription - Cyber Formation Maroc{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-person-plus-fill display-1" style="color: #FF7F00;"></i>
+                        <h2 class="mt-3 fw-bold">Inscription</h2>
+                        <p class="text-muted">Créez votre compte gratuitement</p>
+                    </div>
+
+                    {{ form_start(registrationForm, {'attr': {'class': 'needs-validation'}}) }}
+                        
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-envelope text-muted"></i>
+                                </span>
+                                {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control border-start-0', 'placeholder': 'votre@email.com'}}) }}
+                            </div>
+                            {{ form_errors(registrationForm.email) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.fullName, 'Nom complet', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-person text-muted"></i>
+                                </span>
+                                {{ form_widget(registrationForm.fullName, {'attr': {'class': 'form-control border-start-0', 'placeholder': 'Votre nom et prénom'}}) }}
+                            </div>
+                            {{ form_errors(registrationForm.fullName) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.phone, 'Téléphone (optionnel)', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-phone text-muted"></i>
+                                </span>
+                                {{ form_widget(registrationForm.phone, {'attr': {'class': 'form-control border-start-0', 'placeholder': '+212 6XX XXX XXX'}}) }}
+                            </div>
+                            {{ form_errors(registrationForm.phone) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-lock text-muted"></i>
+                                </span>
+                                {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control border-start-0', 'placeholder': '••••••'}}) }}
+                            </div>
+                            {{ form_errors(registrationForm.plainPassword) }}
+                            <div class="form-text small text-muted">
+                                <i class="bi bi-info-circle"></i> Minimum 6 caractères
+                            </div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input', 'style': 'border-color: #FF7F00;'}}) }}
+                            {{ form_label(registrationForm.agreeTerms, 'J\'accepte les conditions d\'utilisation', {'label_attr': {'class': 'form-check-label'}}) }}
+                            {{ form_errors(registrationForm.agreeTerms) }}
+                        </div>
+
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('register') }}">
+
+                        <button type="submit" class="btn-cyber w-100 py-2">
+                            <i class="bi bi-check-circle me-2"></i>S'inscrire
+                        </button>
+                    {{ form_end(registrationForm) }}
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p class="mb-0">Déjà un compte ?</p>
+                        <a href="{{ path('app_login') }}" class="btn-cyber-outline w-100 py-2 mt-2">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+                        </a>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <p class="small text-muted mb-0">
+                            En vous inscrivant, vous acceptez nos 
+                            <a href="#" class="text-decoration-none">Conditions d'utilisation</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="bg-light rounded-4 p-4 text-center">
+                <h5 class="mb-3">🎁 Ce que vous obtenez gratuitement</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <i class="bi bi-play-circle fs-1" style="color: #FF7F00;"></i>
+                        <p class="mt-2 fw-semibold mb-0">3 extraits gratuits</p>
+                        <small class="text-muted">Découvrez la qualité</small>
+                    </div>
+                    <div class="col-md-4">
+                        <i class="bi bi-download fs-1" style="color: #FF7F00;"></i>
+                        <p class="mt-2 fw-semibold mb-0">PDF offerts</p>
+                        <small class="text-muted">Supports de cours</small>
+                    </div>
+                    <div class="col-md-4">
+                        <i class="bi bi-chat-dots fs-1" style="color: #FF7F00;"></i>
+                        <p class="mt-2 fw-semibold mb-0">Communauté</p>
+                        <small class="text-muted">Échangez avec d'autres</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

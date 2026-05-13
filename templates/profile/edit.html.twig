@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mon profil - Cyber Formation Maroc{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">Modifier mon profil</h2>
+                    
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                            <small class="text-muted">L'email ne peut pas être modifié</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Nom complet</label>
+                            <input type="text" name="fullName" class="form-control" value="{{ user.fullName }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Téléphone</label>
+                            <input type="tel" name="phone" class="form-control" value="{{ user.phone }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Nouveau mot de passe</label>
+                            <input type="password" name="newPassword" class="form-control" placeholder="Laisser vide pour ne pas changer">
+                        </div>
+                        
+                        <button type="submit" class="btn-cyber w-100">Enregistrer</button>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <a href="{{ path('app_profile') }}" class="btn-cyber-outline">Retour</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

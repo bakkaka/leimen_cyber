@@ -1,0 +1,153 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cyber Formation Maroc - Formation Cybersécurité{% endblock %}
+
+{% block body %}
+<div class="hero-section">
+    <div class="container text-center">
+        <div class="hero-badge">🔥 Formations certifiantes 🔥</div>
+        <h1 class="hero-title">Maîtrisez la Cybersécurité</h1>
+        <p class="lead text-white-50 mb-4">
+            Formation 100% pratique. De zéro à expert en protection des données.
+            <strong class="text-white">Certificat officiel offert !</strong>
+        </p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="{{ path('app_course_index') }}" class="btn-cyber btn-lg">
+                📚 Voir les formations
+            </a>
+            <a href="#extraits" class="btn-cyber-outline btn-lg">
+                ▶️ Extraits gratuits
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row text-center">
+        <div class="col-md-3 mb-4" data-aos="fade-up">
+            <div class="stat-number">{{ totalCourses|default(0) }}</div>
+            <div class="stat-label">Formations</div>
+        </div>
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-number">+{{ totalStudents|default(0) }}</div>
+            <div class="stat-label">Étudiants formés</div>
+        </div>
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Satisfaction</div>
+        </div>
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="stat-number">🎓</div>
+            <div class="stat-label">Certificat offert</div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-light py-5" id="formations">
+    <div class="container">
+        <h2 class="text-center mb-5" data-aos="fade-up">📚 Nos dernières formations</h2>
+        
+        {% if latestCourses|length > 0 %}
+        <div class="row">
+            {% for course in latestCourses %}
+            <div class="col-md-4 mb-4">
+                <div class="course-card">
+                    <div class="course-image">
+                        {% if course.imageUrl %}
+                            <img src="{{ course.imageUrl }}" alt="{{ course.title }}" loading="lazy">
+                        {% else %}
+                            <i class="bi bi-shield-shaded display-1 text-white-50"></i>
+                        {% endif %}
+                        <span class="course-badge badge-{{ course.level }}">
+                            {% if course.level == 'beginner' %}Débutant
+                            {% elseif course.level == 'intermediate' %}Intermédiaire
+                            {% else %}Avancé{% endif %}
+                        </span>
+                    </div>
+                    <div class="course-content">
+                        <h3 class="course-title">{{ course.title }}</h3>
+                        <div class="course-description">
+                            {{ course.shortDescription|default(course.description|slice(0, 100)) }}...
+                        </div>
+                        <div class="course-meta">
+                            <span><i class="bi bi-clock"></i> {{ course.duration }} min</span>
+                            <span><i class="bi bi-play-circle"></i> {{ course.modules|length }} modules</span>
+                        </div>
+                        <div class="course-price">{{ (course.price / 100)|number_format(0, ',', ' ') }} MAD</div>
+                        <a href="{{ path('app_course_show', {'slug': course.slug}) }}" class="btn-cyber w-100 text-center d-block">
+                            📖 Voir les détails
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ path('app_course_index') }}" class="btn-cyber-outline btn-lg">
+                Voir toutes nos formations →
+            </a>
+        </div>
+        {% else %}
+        <div class="text-center">
+            <p class="text-muted">Aucune formation disponible pour le moment.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div id="extraits" class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5" data-aos="fade-up">🎬 Extraits gratuits</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="video-placeholder" 
+                     data-video-id="dQw4w9WgXcQ" 
+                     data-platform="youtube"
+                     data-video-title="Pourquoi vos mots de passe sont faibles ?">
+                    <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" 
+                         alt="Miniature vidéo" 
+                         style="width: 100%;">
+                    <div class="video-play-btn">
+                        <i class="bi bi-play-fill"></i>
+                    </div>
+                    <div class="p-3 bg-white">
+                        <h5>Pourquoi vos mots de passe sont faibles ?</h5>
+                        <p class="text-muted small">Extrait de 12 min</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="video-placeholder" 
+                     data-video-id="dQw4w9WgXcQ" 
+                     data-platform="youtube"
+                     data-video-title="Le phishing expliqué">
+                    <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" 
+                         alt="Miniature vidéo" 
+                         style="width: 100%;">
+                    <div class="video-play-btn">
+                        <i class="bi bi-play-fill"></i>
+                    </div>
+                    <div class="p-3 bg-white">
+                        <h5>Le phishing expliqué simplement</h5>
+                        <p class="text-muted small">Extrait de 15 min</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-dark text-white py-5 text-center">
+    <div class="container">
+        <h3 class="mb-3" data-aos="fade-up">Prêt à devenir un expert en cybersécurité ?</h3>
+        <p class="mb-4 text-white-50" data-aos="fade-up" data-aos-delay="100">
+            Rejoignez +{{ totalStudents|default(0) }} étudiants marocains qui protègent déjà leurs données
+        </p>
+        <a href="{{ path('app_register') }}" class="btn-cyber btn-lg" data-aos="fade-up" data-aos-delay="200">
+            🚀 Je m'inscris maintenant
+        </a>
+    </div>
+</div>
+{% endblock %}

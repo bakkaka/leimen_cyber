@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+# See also https://symfony.com/doc/current/service_container/import.html
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    stripe.secret_key: '%env(STRIPE_SECRET_KEY)%'
+    stripe.public_key: '%env(STRIPE_PUBLIC_KEY)%'
+    brevo.api_key: '%env(BREVO_API_KEY)%'
+    brevo.from_email: '%env(BREVO_FROM_EMAIL)%'
+    brevo.from_name: '%env(BREVO_FROM_NAME)%'
+    paypal.client_id: '%env(PAYPAL_CLIENT_ID)%'
+    paypal.secret: '%env(PAYPAL_SECRET)%'
+    paypal.mode: '%env(PAYPAL_MODE)%'
+    attijari.rib: '%env(ATTIJARI_RIB)%'
+    attijari.swift: '%env(ATTIJARI_SWIFT)%'
+    attijari.name: '%env(ATTIJARI_ACCOUNT_NAME)%'
+    cih.rib: '%env(CIH_RIB)%'
+    bp.rib: '%env(BP_RIB)%'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    App\Service\BrevoEmailService:
+        arguments:
+            $brevoApiKey: '%brevo.api_key%'
+            $brevoFromEmail: '%brevo.from_email%'
+            $brevoFromName: '%brevo.from_name%'
+
+    App\Service\StripeService:
+        arguments:
+            $stripeSecretKey: '%stripe.secret_key%'
+            $stripePublicKey: '%stripe.public_key%'
+
+    App\Service\PayPalService:
+        arguments:
+            $clientId: '%paypal.client_id%'
+            $clientSecret: '%paypal.secret%'
+            $mode: '%paypal.mode%'
+
+    App\Service\BankTransferService:
+        arguments:
+            $attijariRib: '%attijari.rib%'
+            $attijariSwift: '%attijari.swift%'
+            $attijariName: '%attijari.name%'
+            $cihRib: '%cih.rib%'
+            $bpRib: '%bp.rib%'
