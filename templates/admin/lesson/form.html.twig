@@ -13,6 +13,11 @@
         </div>
         
         <div class="mb-3">
+            <label class="form-label">Texte d'accroche (teaser)</label>
+            <textarea name="teaser" class="form-control" rows="2">{{ lesson.teaser }}</textarea>
+        </div>
+        
+        <div class="mb-3">
             <label class="form-label">Contenu (HTML autorisé)</label>
             <textarea name="content" class="form-control" rows="10">{{ lesson.content }}</textarea>
         </div>
@@ -23,13 +28,37 @@
         </div>
         
         <div class="mb-3">
-            <label class="form-label">Durée (secondes)</label>
+            <label class="form-label">Plateforme vidéo</label>
+            <select name="video_platform" class="form-control">
+                <option value="youtube" {% if lesson.videoPlatform == 'youtube' %}selected{% endif %}>YouTube</option>
+                <option value="vimeo" {% if lesson.videoPlatform == 'vimeo' %}selected{% endif %}>Vimeo</option>
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Durée (minutes)</label>
             <input type="number" name="duration" class="form-control" value="{{ lesson.duration }}">
         </div>
         
         <div class="mb-3">
             <label class="form-label">Numéro d'ordre</label>
             <input type="number" name="order_number" class="form-control" value="{{ lesson.orderNumber }}">
+        </div>
+        
+        <div class="mb-3 form-check">
+            <input type="checkbox" name="is_free_preview" class="form-check-input" value="1" {% if lesson.isFreePreview %}checked{% endif %}>
+            <label class="form-check-label">Leçon gratuite (aperçu)</label>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Points clés à retenir (un point par ligne)</label>
+            <textarea name="keyTakeaways" class="form-control" rows="4" placeholder="Linux est open-source&#10;La plupart des outils tournent sous Linux&#10;Kali Linux est la distribution la plus utilisée">{{ lesson.keyTakeaways is iterable ? lesson.keyTakeaways|join('\n') : lesson.keyTakeaways }}</textarea>
+            <small class="form-text text-muted">Chaque ligne deviendra un point dans la liste.</small>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Action à réaliser</label>
+            <textarea name="action_item" class="form-control" rows="2">{{ lesson.actionItem }}</textarea>
         </div>
         
         <div class="mb-3">

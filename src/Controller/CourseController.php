@@ -192,60 +192,97 @@ public function completeLesson(Lesson $lesson, Request $request, EntityManagerIn
 {
     $user = $this->getUser();
     $course = $lesson->getModule()->getCourse();
-    
+
     if (!$this->isCsrfTokenValid('complete_' . $lesson->getId(), $request->request->get('_token'))) {
         $this->addFlash('error', 'Token invalide.');
         return $this->redirectToRoute('app_course_show', ['slug' => $course->getSlug()]);
     }
-    
-    // 1. Mettre à jour la progression de la leçon
+
+    // 1. Récupérer ou créer la progression
     $progress = $em->getRepository(UserLessonProgress::class)->findOneBy([
         'student' => $user,
         'lesson' => $lesson
     ]);
-    
+
     if (!$progress) {
         $progress = new UserLessonProgress();
         $progress->setStudent($user);
         $progress->setLesson($lesson);
+        $em->persist($progress);
     }
-    
-    if (!$progress->isCompleted()) {
-        $progress->setCompleted(true);
-        $progress->setCompletedAt(new \DateTime());
+
+    // 2. Forcer la mise à jour (même si déjà complétée, on s'assure)
+    $progress->setCompleted(true);
+    $progress->setCompletedAt(new \DateTime());
+
+    // 3. Flush immédiat pour sauvegarder
+    $em->flush();
+
+    $this->addFlash('success', '✅ Leçon marquée comme terminée.');
+
+    // 4. Recalculer la progression totale
+    $totalLessons = 0;
+    $completedLessons = 0;
+    foreach ($course->getModules() as $module) {
+        foreach ($module->getLessons() as $l) {
+            $totalLessons++;
+            $p = $em->getRepository(UserLessonProgress::class)->findOneBy([
+                'student' => $user,
+                'lesson' => $l
+            ]);
+            if ($p && $p->isCompleted()) {
+                $completedLessons++;
+            }
+        }
+    }
+
+    $progressPercent = $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
+
+    // 5. Mettre à jour l'enrollment
+    $enrollment = $em->getRepository(Enrollment::class)->findOneBy([
+        'student' => $user,
+        'course' => $course
+    ]);
+
+    if ($enrollment) {
+        $enrollment->setProgress($progressPercent);
+        if ($progressPercent >= 100) {
+            $enrollment->setIsCompleted(true);
+        }
         $em->flush();
-        $this->addFlash('success', '✅ Leçon terminée !');
+        $this->addFlash('info', "Progression : {$progressPercent}%");
     }
-    
-    // 2. Trouver la prochaine leçon non terminée
+
+    // 6. Redirection personnalisée (si présente dans le formulaire)
+    $redirect = $request->request->get('_redirect');
+    if ($redirect) {
+        return $this->redirect($redirect);
+    }
+
+    // 7. Trouver la prochaine leçon non terminée (comportement par défaut)
     $nextLesson = null;
     foreach ($course->getModules() as $module) {
         foreach ($module->getLessons() as $l) {
-            $p = $em->getRepository(UserLessonProgress::class)->findOneBy(['student' => $user, 'lesson' => $l]);
+            $p = $em->getRepository(UserLessonProgress::class)->findOneBy([
+                'student' => $user,
+                'lesson' => $l
+            ]);
             if (!$p || !$p->isCompleted()) {
                 $nextLesson = $l;
                 break 2;
             }
         }
     }
-    
+
     if ($nextLesson) {
         return $this->redirectToRoute('app_course_lesson', [
             'courseSlug' => $course->getSlug(),
             'lessonId' => $nextLesson->getId()
         ]);
     }
-    
-    // 3. Plus de leçons → formation terminée
-    $enrollment = $em->getRepository(Enrollment::class)->findOneBy(['student' => $user, 'course' => $course]);
-    if ($enrollment) {
-        $enrollment->setProgress(100);
-        $enrollment->setIsCompleted(true);  // ← CORRECTION : setIsCompleted
-        // $enrollment->setCompletedAt(new \DateTime()); // ← À SUPPRIMER (n'existe pas)
-        $em->flush();
-        $this->addFlash('success', '🎉 Félicitations ! Formation terminée avec succès !');
-    }
-    
+
+    // 8. Plus de leçons → formation terminée
+    $this->addFlash('success', '🎉 Félicitations ! Formation terminée avec succès !');
     return $this->redirectToRoute('app_course_show', ['slug' => $course->getSlug()]);
 }
 }

@@ -69,9 +69,13 @@ class Lesson
     #[ORM\OneToMany(targetEntity: UserLessonProgress::class, mappedBy: 'lesson', cascade: ['remove'])]
     private Collection $progresses;
 
+    #[ORM\Column(type: 'datetime_immutable')]
+     private ?\DateTimeImmutable $createdAt = null;
+
     public function __construct()
     {
         $this->progresses = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     // Getters et Setters
@@ -225,4 +229,15 @@ class Lesson
         }
         return $this;
     }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+{
+    return $this->createdAt;
+}
+
+public function setCreatedAt(\DateTimeImmutable $createdAt): static
+{
+    $this->createdAt = $createdAt;
+    return $this;
+}
 }

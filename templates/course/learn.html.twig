@@ -72,7 +72,7 @@
                 </div>
             {% endif %}
             
-            {# NAVIGATION #}
+            {# NAVIGATION AVEC SAUVEGARDE AUTOMATIQUE #}
             <div class="d-flex justify-content-between align-items-center mt-4">
                 <div>
                     {% if prevLesson %}
@@ -101,13 +101,21 @@
                 
                 <div>
                     {% if nextLesson %}
-                        <a href="{{ path('app_course_lesson', {'courseSlug': course.slug, 'lessonId': nextLesson.id}) }}" class="btn btn-primary">
-                            Leçon suivante →
-                        </a>
+                        <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('complete_' ~ lesson.id) }}">
+                            <input type="hidden" name="_redirect" value="{{ path('app_course_lesson', {'courseSlug': course.slug, 'lessonId': nextLesson.id}) }}">
+                            <button type="submit" class="btn btn-primary">
+                                Marquer & suivante →
+                            </button>
+                        </form>
                     {% else %}
-                        <a href="{{ path('app_course_show', {'slug': course.slug}) }}" class="btn btn-warning">
-                            🎓 Terminer la formation
-                        </a>
+                        <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('complete_' ~ lesson.id) }}">
+                            <input type="hidden" name="_redirect" value="{{ path('app_course_show', {'slug': course.slug}) }}">
+                            <button type="submit" class="btn btn-warning">
+                                🎓 Terminer la formation
+                            </button>
+                        </form>
                     {% endif %}
                 </div>
             </div>
