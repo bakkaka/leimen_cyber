@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Controller\Admin;
+
+use App\Entity\Prerequisite;
+use App\Form\PrerequisiteType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\String\Slugger\SluggerInterface;
+
+#[Route('/admin/prerequisites')]
+#[IsGranted('ROLE_ADMIN')]
+class PrerequisiteAdminController extends AbstractController
+{
+    #[Route('/', name: 'app_admin_prerequisites')]
+    public function index(EntityManagerInterface $em): Response
+    {
+        $prerequisites = $em->getRepository(Prerequisite::class)->findBy([], ['createdAt' => 'DESC']);
+        return $this->render('admin/prerequisite/index.html.twig', [
+            'prerequisites' => $prerequisites,
+        ]);
+    }
+
+    #[Route('/new', name: 'app_admin_prerequisite_new')]
+    public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    {
+        $prerequisite = new Prerequisite();
+        $form = $this->createForm(PrerequisiteType::class, $prerequisite);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $prerequisite->setSlug($slugger->slug($prerequisite->getTitle())->lower());
+            $prerequisite->setCreatedAt(new \DateTimeImmutable());
+            $em->persist($prerequisite);
+            $em->flush();
+
+            $this->addFlash('success', 'Prérequis créé avec succès.');
+            return $this->redirectToRoute('app_admin_prerequisites');
+        }
+
+        return $this->render('admin/prerequisite/form.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Créer un prérequis',
+        ]);
+    }
+
+    #[Route('/edit/{id}', name: 'app_admin_prerequisite_edit')]
+    public function edit(Prerequisite $prerequisite, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    {
+        $form = $this->createForm(PrerequisiteType::class, $prerequisite);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $prerequisite->setSlug($slugger->slug($prerequisite->getTitle())->lower());
+            $em->flush();
+
+            $this->addFlash('success', 'Prérequis modifié avec succès.');
+            return $this->redirectToRoute('app_admin_prerequisites');
+        }
+
+        return $this->render('admin/prerequisite/form.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Modifier le prérequis',
+        ]);
+    }
+
+    #[Route('/delete/{id}', name: 'app_admin_prerequisite_delete', methods: ['POST'])]
+    public function delete(Prerequisite $prerequisite, Request $request, EntityManagerInterface $em): Response
+    {
+        if ($this->isCsrfTokenValid('delete' . $prerequisite->getId(), $request->request->get('_token'))) {
+            $em->remove($prerequisite);
+            $em->flush();
+            $this->addFlash('success', 'Prérequis supprimé.');
+        }
+        return $this->redirectToRoute('app_admin_prerequisites');
+    }
+}

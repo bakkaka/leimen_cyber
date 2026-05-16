@@ -3,6 +3,9 @@
 {% block title %}{{ lesson.title }} - {{ course.title }}{% endblock %}
 
 {% block body %}
+<h1 style="background:red;color:white;padding:20px;">
+    TEST LEARN TEMPLATE
+</h1>
 <div class="container-fluid py-4">
     <div class="row">
         <!-- Sidebar gauche -->
@@ -11,10 +14,33 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ course.title }}</h5>
                     <div class="progress-cyber mb-2">
-                        <div class="progress-cyber-bar" style="width: {{ globalProgress }}%"></div>
+                        <div class="progress-cyber-bar" style="width: {{ stats.percentage }}%"></div>
                     </div>
-                    <small class="text-muted">{{ globalProgress }}% complété</small>
+                    <small class="text-muted">{{ stats.percentage }}% complété</small>
                     <hr>
+                    
+                    <div class="mb-3">
+                        <a href="{{ path('app_my_courses') }}" class="text-decoration-none">
+                            <i class="bi bi-grid-3x3-gap-fill me-1"></i> 📚 Mes formations
+                        </a>
+                    </div>
+                    
+                    <div class="mb-4 pb-2 border-bottom">
+                        <div class="fw-bold mb-2">🛠️ Avant de commencer</div>
+                        <ul class="list-unstyled ms-2">
+                            <li class="mb-2">
+                                <a href="{{ path('app_prerequisite_show', {'slug': 'installer-virtualbox-et-kali-linux'}) }}" class="text-decoration-none">
+                                    📥 Installer VirtualBox et Kali Linux
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <a href="{{ path('app_course_show', {'slug': course.slug}) }}" class="text-decoration-none">
+                            <i class="bi bi-arrow-left-circle me-1"></i> Retour au programme du cours
+                        </a>
+                    </div>
                     
                     {% for module in course.modules %}
                         <div class="mb-3">
@@ -23,7 +49,7 @@
                                 {% for l in module.lessons %}
                                     <a href="{{ path('app_course_lesson', {courseSlug: course.slug, lessonId: l.id}) }}" 
                                        class="d-block mb-2 text-decoration-none {% if l.id == lesson.id %}text-primary fw-bold{% else %}text-dark{% endif %}">
-                                        <i class="bi bi-{% if l.id in completedLessonsIds %}check-circle-fill text-success{% else %}play-circle{% endif %} me-2"></i>
+                                        <i class="bi bi-play-circle me-2"></i>
                                         {{ l.title }}
                                     </a>
                                 {% endfor %}
@@ -34,50 +60,95 @@
             </div>
         </div>
         
-        <!-- Contenu principal -->
         <div class="col-md-8 col-lg-9">
             <div class="card shadow-sm rounded-4">
                 <div class="card-body p-4">
                     <h2>{{ lesson.title }}</h2>
-                    
                     {% if lesson.teaser %}
-                        <div class="alert alert-info">
-                            {{ lesson.teaser }}
-                        </div>
+                        <div class="alert alert-info">{{ lesson.teaser }}</div>
                     {% endif %}
                     
-                    <!-- Lecteur vidéo simple -->
                     <div class="ratio ratio-16x9 mb-4">
                         <iframe src="{{ lesson.videoUrl }}" allowfullscreen></iframe>
                     </div>
                     
                     {% if lesson.content %}
-                        <div class="mt-4">
-                            {{ lesson.content|raw }}
-                        </div>
+                        <div class="mt-4">{{ lesson.content|raw }}</div>
                     {% endif %}
+
+                    {# ========== NAVIGATION ========== #}
+               <div class="d-flex justify-content-between align-items-center mt-4">
+    <div>
+        {% if prevLesson %}
+            <a href="{{ path('app_course_lesson', {'courseSlug': course.slug, 'lessonId': prevLesson.id}) }}" class="btn btn-secondary">
+                ← Leçon précédente
+            </a>
+        {% else %}
+            <span></span>
+        {% endif %}
+    </div>
+    
+    <div>
+        {% if not progress.completed %}
+            <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
+                <input type="hidden" name="_token" value="{{ csrf_token('complete_' ~ lesson.id) }}">
+                <button type="submit" class="btn btn-success">
+                    ✅ Marquer comme terminée
+                </button>
+            </form>
+        {% else %}
+            <span class="badge bg-success p-2">
+                ✅ Terminée le {{ progress.completedAt|date('d/m/Y H:i') }}
+            </span>
+        {% endif %}
+    </div>
+    
+    <div>
+        {% if nextLesson %}
+            <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
+                <input type="hidden" name="_token" value="{{ csrf_token('complete_' ~ lesson.id) }}">
+                <input type="hidden" name="_redirect" value="{{ path('app_course_lesson', {'courseSlug': course.slug, 'lessonId': nextLesson.id}) }}">
+                <button type="submit" class="btn btn-primary">
+                    Marquer & suivante →
+                </button>
+            </form>
+        {% else %}
+            <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
+                <input type="hidden" name="_token" value="{{ csrf_token('complete_' ~ lesson.id) }}">
+                <input type="hidden" name="_redirect" value="{{ path('app_course_show', {'slug': course.slug}) }}">
+                <button type="submit" class="btn btn-warning">
+                    🎓 Terminer la formation
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</div>
                     
-                    <!-- Navigation -->
-                    <div class="d-flex justify-content-between mt-4">
-                        {% if previousLesson %}
-                            <a href="{{ path('app_course_lesson', {courseSlug: course.slug, lessonId: previousLesson.id}) }}" class="btn-cyber-outline">
-                                ← Leçon précédente
-                            </a>
+                    <!-- SECTION COMMENTAIRES -->
+                    {#<div class="mt-5 pt-3 border-top">
+                        <h4>💬 Questions / remarques</h4>
+                        {% if app.user %}
+                            <form method="post" action="{{ path('app_comment_lesson_add', {'id': lesson.id}) }}" class="mt-3">
+                                <textarea name="content" rows="3" class="form-control" placeholder="Écrivez votre question ici..." required></textarea>
+                                <button type="submit" class="btn btn-sm btn-outline-primary mt-2">Envoyer</button>
+                            </form>
                         {% else %}
-                            <div></div>
+                            <p><a href="{{ path('app_login') }}">Connectez-vous</a> pour poser une question.</p>
                         {% endif %}
-                        
-                        {% if nextLesson %}
-                            <a href="{{ path('app_course_lesson', {courseSlug: course.slug, lessonId: nextLesson.id}) }}" class="btn-cyber">
-                                Leçon suivante →
-                            </a>
+                        <hr>
+                        {% for comment in comments %}
+                            <div class="mb-3 pb-2 border-bottom">
+                                <div class="d-flex justify-content-between">
+                                    <strong>{{ comment.author.fullName|default(comment.author.email) }}</strong>
+                                    <small class="text-muted">{{ comment.createdAt|date('d/m/Y H:i') }}</small>
+                                </div>
+                                <p class="mb-0 mt-1">{{ comment.content }}</p>
+                            </div>
                         {% else %}
-                            <a href="{{ path('app_course_show', {slug: course.slug}) }}" class="btn-cyber">
-                                Terminer le cours 🏆
-                            </a>
-                        {% endif %}
-                    </div>
-                </div>
+                            <p class="text-muted">Aucune question pour cette leçon.</p>
+                        {% endfor %}
+                    </div>#}
+                </div>#}
             </div>
         </div>
     </div>

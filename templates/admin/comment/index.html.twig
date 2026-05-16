@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modération des commentaires{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>💬 Modération des commentaires</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Auteur</th>
+                <th>Contenu</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for comment in comments %}
+                <tr>
+                    <td>{{ comment.id }}</td>
+                    <td>{{ comment.author.email }}<br><small>{{ comment.author.fullName|default('') }}</small></td>
+                    <td>{{ comment.content|slice(0, 100) }}{% if comment.content|length > 100 %}...{% endif %}</td>
+                    <td>{{ comment.entityType }} (ID {{ comment.entityId }})</td>
+                    <td>{{ comment.createdAt|date('d/m/Y H:i') }}</td>
+                    <td>
+                        {% if comment.isApproved %}
+                            <span class="badge bg-success">Approuvé</span>
+                        {% else %}
+                            <span class="badge bg-warning">En attente</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not comment.isApproved %}
+                            <form method="post" action="{{ path('app_admin_comment_approve', {id: comment.id}) }}" style="display:inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('approve' ~ comment.id) }}">
+                                <button class="btn btn-sm btn-success">Approuver</button>
+                            </form>
+                        {% endif %}
+                        <form method="post" action="{{ path('app_admin_comment_delete', {id: comment.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer définitivement ?')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comment.id) }}">
+                            <button class="btn btn-sm btn-danger">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" class="text-center">Aucun commentaire.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

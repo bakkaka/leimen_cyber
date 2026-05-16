@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des questions{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>📋 Gestion des questions</h1>
+    <a href="{{ path('app_admin_question_new') }}" class="btn btn-primary mb-3">+ Nouvelle question</a>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Quiz</th>
+                    <th>Question</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for question in questions %}
+                    <tr>
+                        <td>{{ question.id }}</td>
+                        <td>{{ question.quiz.title }}</td>
+                        <td>{{ question.text|slice(0, 80) }}{% if question.text|length > 80 %}...{% endif %}</td>
+                        <td>{{ question.type == 'multiple_choice' ? 'Choix multiples' : 'Vrai/Faux' }}</td>
+                        <td>
+                            <a href="{{ path('app_admin_question_edit', {id: question.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                            <form method="post" action="{{ path('app_admin_question_delete', {id: question.id}) }}" style="display:inline-block">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ question.id) }}">
+                                <button class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cette question ?')">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">Aucune question pour le moment. You can create one.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

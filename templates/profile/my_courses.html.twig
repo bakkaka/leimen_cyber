@@ -1,43 +1,63 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes formations - Cyber Formation Maroc{% endblock %}
+{% block title %}Mes formations{% endblock %}
 
 {% block body %}
-<div class="container py-5">
-    <h1 class="mb-4">Mes formations</h1>
-    
-    {% if enrollments|length > 0 %}
-        <div class="row">
-            {% for enrollment in enrollments %}
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm rounded-4">
-                        <div class="card-body">
-                            <h3>{{ enrollment.course.title }}</h3>
-                            <div class="progress-cyber mb-2">
-                                <div class="progress-cyber-bar" style="width: {{ enrollment.progress }}%"></div>
-                            </div>
-                            <p class="text-muted">{{ enrollment.progress }}% complété</p>
-                            <a href="{{ path('app_course_learn', {slug: enrollment.course.slug}) }}" class="btn-cyber">
-                                <i class="bi bi-play-circle me-2"></i>Continuer
-                            </a>
+<div class="container mt-5">
+    <h1 class="mb-4">📚 Mes formations</h1>
+
+    {% for enrollment in enrollments %}
+        <div class="card shadow-sm rounded-4 mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h3 class="card-title">{{ enrollment.course.title }}</h3>
+                        <p class="text-muted">Inscrit le {{ enrollment.enrolledAt|date('d/m/Y') }}</p>
+                    </div>
+                    <div class="text-end">
+                        <div class="progress-cyber mb-1" style="width: 200px;">
+                            <div class="progress-cyber-bar" style="width: {{ enrollment.progress }}%"></div>
                         </div>
+                        <small class="text-muted">{{ enrollment.progress }}% complété</small>
                     </div>
                 </div>
-            {% endfor %}
-        </div>
-        
-        <div class="mt-4 alert alert-info">
-            <strong>Statistiques :</strong>
-            Total: {{ totalCourses }} formation(s) |
-            Terminées: {{ completedCourses }} |
-            Progression moyenne: {{ averageProgress }}%
+
+                <!-- Boutons Continuer et Prérequis -->
+                <div class="mt-3">
+                    <a href="{{ path('app_course_learn', {slug: enrollment.course.slug}) }}" class="btn-cyber">
+                        <i class="bi bi-play-circle me-2"></i>Continuer la formation
+                    </a>
+                    <a href="{{ path('app_prerequisite_show', {'slug': 'installer-virtualbox-et-kali-linux'}) }}" class="btn-cyber-outline ms-2">
+                        <i class="bi bi-tools me-2"></i>Prérequis
+                    </a>
+                </div>
+
+                <!-- Leçons terminées (cliquables pour révision) -->
+                <div class="mt-4">
+                    <h5>📖 Leçons terminées</h5>
+                    {% set completedLessons = getCompletedLessons(app.user, enrollment.course) %}
+                    {% if completedLessons|length > 0 %}
+                        <div class="row">
+                            {% for lesson in completedLessons %}
+                                <div class="col-md-6 mb-2">
+                                    <a href="{{ path('app_course_lesson', {courseSlug: enrollment.course.slug, lessonId: lesson.id}) }}" class="text-decoration-none">
+                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                        {{ lesson.title }}
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Aucune leçon terminée pour le moment.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     {% else %}
         <div class="alert alert-info">
-            <i class="bi bi-info-circle me-2"></i>
-            Vous n'êtes inscrit à aucune formation.
-            <a href="{{ path('app_course_index') }}">Découvrir les formations</a>
+            Vous n’êtes inscrit à aucune formation.
+            <a href="{{ path('app_course_index') }}" class="alert-link">Découvrir nos formations</a>
         </div>
-    {% endif %}
+    {% endfor %}
 </div>
 {% endblock %}

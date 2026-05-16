@@ -630,3 +630,74 @@ body {
 .fade-in-up {
     animation: fadeInUp 0.6s ease-out forwards;
 }
+
+.btn-cyber {
+    background: #FF7F00;
+    border: none;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-cyber:hover {
+    background: #E67300;
+    color: white;
+    transform: translateY(-2px);
+}
+.btn-cyber-outline {
+    background: transparent;
+    border: 2px solid #FF7F00;
+    color: #FF7F00;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-cyber-outline:hover {
+    background: #FF7F00;
+    color: white;
+    transform: translateY(-2px);
+}
+.progress-cyber {
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.progress-cyber-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #FF7F00, #FF9F33);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.btn-cyber,
+.btn-cyber-outline {
+    position: relative;
+    z-index: 999;
+}
+
+.d-flex.justify-content-between {
+    overflow: visible !important;
+}
+
+.ratio iframe {
+    position: relative;
+    z-index: 1;
+}
+
+.card-body {
+    position: relative;
+    z-index: 2;
+}
+
+.d-flex.justify-content-between.align-items-center {
+    position: relative;
+    z-index: 9999;
+    margin-top: 30px !important;
+}

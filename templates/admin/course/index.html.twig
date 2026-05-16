@@ -20,21 +20,22 @@
 
 <div class="container py-5">
     {% set levels = [
-        {'name': 'beginner', 'label': 'Débutant', 'icon': 'star-fill', 'color': 'success', 'courses': beginnerCourses},
-        {'name': 'intermediate', 'label': 'Intermédiaire', 'icon': 'star-half', 'color': 'warning', 'courses': intermediateCourses},
-        {'name': 'advanced', 'label': 'Avancé', 'icon': 'gem', 'color': 'danger', 'courses': advancedCourses}
+        {'name': 'beginner', 'label': 'Débutant', 'icon': 'star-fill', 'color': 'success'},
+        {'name': 'intermediate', 'label': 'Intermédiaire', 'icon': 'star-half', 'color': 'warning'},
+        {'name': 'advanced', 'label': 'Avancé', 'icon': 'gem', 'color': 'danger'}
     ] %}
     
     {% for level in levels %}
-        {% if level.courses|length > 0 %}
+        {% set levelCourses = courses|filter(c => c.level == level.name) %}
+        {% if levelCourses|length > 0 %}
         <div class="mb-5">
             <h2 class="mb-4">
                 <i class="bi bi-{{ level.icon }} text-{{ level.color }} me-2"></i>
                 Niveau {{ level.label }}
-                <span class="badge bg-{{ level.color }} ms-2">{{ level.courses|length }} formations</span>
+                <span class="badge bg-{{ level.color }} ms-2">{{ levelCourses|length }} formations</span>
             </h2>
             <div class="row">
-                {% for course in level.courses %}
+                {% for course in levelCourses %}
                 <div class="col-md-6 col-lg-4 mb-4">
                     <div class="course-card">
                         <div class="course-image">

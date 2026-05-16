@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des quiz{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>📝 Gestion des quiz</h1>
+    <a href="{{ path('app_admin_quiz_new') }}" class="btn btn-primary mb-3">+ Nouveau quiz</a>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Titre</th>
+                    <th>Module</th>
+                    <th>Score minimal</th>
+                    <th>Publié</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quiz in quizzes %}
+                    <tr>
+                        <td>{{ quiz.id }}</td>
+                        <td>{{ quiz.title }}</td>
+                        <td>{{ quiz.module.course.title }} → {{ quiz.module.title }}</td>
+                        <td>{{ quiz.passingScore }}%</td>
+                        <td>{{ quiz.isPublished ? '✅ Oui' : '❌ Non' }}</td>
+                        <td>
+                            <a href="{{ path('app_admin_quiz_edit', {id: quiz.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                            <form method="post" action="{{ path('app_admin_quiz_delete', {id: quiz.id}) }}" style="display:inline-block">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ quiz.id) }}">
+                                <button class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ce quiz ?')">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">Aucun quiz pour le moment.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

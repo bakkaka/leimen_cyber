@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des prérequis{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>📚 Gestion des prérequis</h1>
+    <a href="{{ path('app_admin_prerequisite_new') }}" class="btn btn-primary mb-3">+ Nouveau prérequis</a>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Titre</th>
+                    <th>Slug</th>
+                    <th>Publié</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prereq in prerequisites %}
+                    <tr>
+                        <td>{{ prereq.id }}</td>
+                        <td>{{ prereq.title }}</td>
+                        <td>{{ prereq.slug }}</td>
+                        <td>{{ prereq.isPublished ? '✅ Oui' : '❌ Non' }}</td>
+                        <td>{{ prereq.createdAt|date('d/m/Y') }}</td>
+                        <td>
+                            <a href="{{ path('app_admin_prerequisite_edit', {id: prereq.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                            <form method="post" action="{{ path('app_admin_prerequisite_delete', {id: prereq.id}) }}" style="display:inline-block">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ prereq.id) }}">
+                                <button class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ce prérequis ?')">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

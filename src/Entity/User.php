@@ -104,12 +104,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: UserLessonProgress::class, mappedBy: 'student', cascade: ['remove'])]
     private Collection $lessonProgresses;
 
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'author')]
+    private Collection $comments;
+
     public function __construct()
     {
         $this->enrollments = new ArrayCollection();
+
         $this->lessonProgresses = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->roles = ['ROLE_USER'];
+         $this->comments = new ArrayCollection();
     }
 
     // Getters et Setters
@@ -287,4 +292,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
         return $this;
     }
+
+    public function getComments(): Collection { return $this->comments; }
 }

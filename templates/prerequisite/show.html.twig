@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ prerequisite.title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm rounded-4">
+                <div class="card-body p-5">
+                    <h1 class="mb-4">{{ prerequisite.title }}</h1>
+                    {{ prerequisite.content|raw }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
