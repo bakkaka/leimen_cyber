@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Entity\Course;
 use App\Entity\Enrollment;
 use App\Entity\Lesson;
+use App\Entity\Quiz;
 use App\Entity\UserLessonProgress;
 use App\Repository\CourseRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -172,12 +173,24 @@ class CourseController extends AbstractController
             }
         }
 
+        // Déterminer si la leçon suivante appartient au même module
+        $hasNextLessonInSameModule = false;
+        if ($nextLesson && $nextLesson->getModule()->getId() === $lesson->getModule()->getId()) {
+            $hasNextLessonInSameModule = true;
+        }
+
         // Récupérer les commentaires pour cette leçon
         $comments = $em->getRepository(Comment::class)->findBy([
             'entityType' => 'lesson',
             'entityId' => $lesson->getId(),
             'isApproved' => true
         ], ['createdAt' => 'ASC']);
+
+        // Récupérer le quiz associé au module de cette leçon (si publié)
+        $moduleQuiz = $em->getRepository(Quiz::class)->findOneBy([
+            'module' => $lesson->getModule(),
+            'isPublished' => true
+        ]);
 
         return $this->render('course/learn.html.twig', [
             'course' => $course,
@@ -191,7 +204,9 @@ class CourseController extends AbstractController
             ],
             'prevLesson' => $prevLesson,
             'nextLesson' => $nextLesson,
+            'hasNextLessonInSameModule' => $hasNextLessonInSameModule,
             'comments' => $comments,
+            'moduleQuiz' => $moduleQuiz,
         ]);
     }
 

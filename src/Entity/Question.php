@@ -45,6 +45,12 @@ class Question
     #[Groups(['question:read'])]
     private ?string $correctAnswer = null;
 
+    public function __construct()
+    {
+        // Initialiser options à un tableau vide par défaut
+        $this->options = [];
+    }
+
     public function getId(): ?int { return $this->id; }
     public function getQuiz(): ?Quiz { return $this->quiz; }
     public function setQuiz(?Quiz $quiz): static { $this->quiz = $quiz; return $this; }
@@ -53,7 +59,17 @@ class Question
     public function getType(): string { return $this->type; }
     public function setType(string $type): static { $this->type = $type; return $this; }
     public function getOptions(): ?array { return $this->options; }
-    public function setOptions(?array $options): static { $this->options = $options; return $this; }
+    
+    public function setOptions(?array $options): static
+    {
+        // Si on reçoit une chaîne (par erreur), on la convertit en tableau
+        if (is_string($options)) {
+            $options = array_filter(array_map('trim', explode("\n", $options)));
+        }
+        $this->options = $options;
+        return $this;
+    }
+    
     public function getCorrectAnswer(): ?string { return $this->correctAnswer; }
     public function setCorrectAnswer(string $correctAnswer): static { $this->correctAnswer = $correctAnswer; return $this; }
 }

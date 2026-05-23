@@ -37,8 +37,9 @@ class QuestionType extends AbstractType
             ->add('options', TextareaType::class, [
                 'label' => 'Options (une par ligne)',
                 'required' => false,
-                'help' => 'Pour les questions à choix multiples. Exemple : Option A\nOption B\nOption C',
-                'attr' => ['class' => 'form-control', 'rows' => 4]
+                'mapped' => false,
+                'attr' => ['class' => 'form-control', 'rows' => 4],
+                'help' => 'Pour les questions à choix multiples. Exemple : Option A\nOption B\nOption C'
             ])
             ->add('correctAnswer', TextType::class, [
                 'label' => 'Bonne réponse',

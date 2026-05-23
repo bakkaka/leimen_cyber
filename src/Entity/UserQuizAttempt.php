@@ -10,7 +10,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'user_quiz_attempt')]
-#[ORM\UniqueConstraint(name: 'unique_user_quiz', columns: ['user_id', 'quiz_id'])]
 #[ApiResource(
     operations: [
         new Get(normalizationContext: ['groups' => ['attempt:read']]),

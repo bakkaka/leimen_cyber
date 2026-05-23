@@ -3,6 +3,10 @@
 {% block title %}{{ lesson.title }} - {{ course.title }}{% endblock %}
 
 {% block body %}
+
+
+
+
 <div class="container-fluid py-4">
     <div class="row">
         <!-- Sidebar gauche -->
@@ -87,11 +91,11 @@
                         <div class="mt-4">{{ lesson.content|raw }}</div>
                     {% endif %}
 
-                    <!-- NAVIGATION CORRIGÉE -->
+                    <!-- ========== NAVIGATION SIMPLIFIÉE (protégée contre les null) ========== -->
                     <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
                         <!-- Bouton précédent -->
                         <div>
-                            {% if prevLesson %}
+                            {% if prevLesson and prevLesson.id %}
                                 <a href="{{ path('app_course_lesson', {courseSlug: course.slug, lessonId: prevLesson.id}) }}" class="btn btn-secondary">
                                     ← Leçon précédente
                                 </a>
@@ -100,37 +104,30 @@
                             {% endif %}
                         </div>
 
-                        <!-- Bouton central (Marquer / Terminée / Terminer) -->
+                        <!-- Bouton central -->
                         <div>
-                            {% if nextLesson %}
-                                {# Leçon normale : bouton "Marquer comme terminée" #}
-                                {% if not progress.completed %}
-                                    <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('complete_' ~ lesson.id) }}">
-                                        <button type="submit" class="btn btn-success">
-                                            ✅ Marquer comme terminée
-                                        </button>
-                                    </form>
-                                {% else %}
-                                    <span class="badge bg-success p-2">
-                                        ✅ Terminée le {{ progress.completedAt|date('d/m/Y H:i') }}
-                                    </span>
-                                {% endif %}
-                            {% else %}
-                                {# Dernière leçon : bouton "Terminer le cours" #}
+                            {% if hasNextLessonInSameModule and not progress.completed %}
                                 <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
                                     <input type="hidden" name="_token" value="{{ csrf_token('complete_' ~ lesson.id) }}">
-                                    <input type="hidden" name="_redirect" value="{{ path('app_course_show', {slug: course.slug}) }}">
-                                    <button type="submit" class="btn btn-warning btn-lg">
-                                        🏆 Terminer le cours
+                                    <button type="submit" class="btn btn-success">
+                                        ✅ Marquer comme terminée
                                     </button>
                                 </form>
+                            {% elseif not hasNextLessonInSameModule and not progress.completed and moduleQuiz is defined and moduleQuiz %}
+    {# Dernière leçon du module, pas encore terminée #}
+    <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
+        <input type="hidden" name="_token" value="{{ csrf_token('complete_' ~ lesson.id) }}">
+        <input type="hidden" name="_redirect" value="{{ path('app_quiz_take', {id: moduleQuiz.id}) }}">
+        <button type="submit" class="btn btn-warning btn-lg">
+            🏆 Terminer le module et passer le quiz
+        </button>
+    </form>
                             {% endif %}
                         </div>
 
                         <!-- Bouton suivant -->
                         <div>
-                            {% if nextLesson %}
+                            {% if hasNextLessonInSameModule and nextLesson and nextLesson.id %}
                                 <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
                                     <input type="hidden" name="_token" value="{{ csrf_token('complete_' ~ lesson.id) }}">
                                     <input type="hidden" name="_redirect" value="{{ path('app_course_lesson', {courseSlug: course.slug, lessonId: nextLesson.id}) }}">
@@ -143,6 +140,15 @@
                             {% endif %}
                         </div>
                     </div>
+
+                    {# Lien direct vers le quiz (si ce n'est pas déjà fait et que la leçon est terminée) #}
+                    {% if not hasNextLessonInSameModule and progress.completed and moduleQuiz is defined and moduleQuiz %}
+                        <div class="mt-4 text-center">
+                            <a href="{{ path('app_quiz_take', {id: moduleQuiz.id}) }}" class="btn btn-warning btn-lg">
+                                📝 Passer le quiz du module
+                            </a>
+                        </div>
+                    {% endif %}
 
                     <!-- SECTION COMMENTAIRES -->
                     <div class="mt-5 pt-3 border-top">

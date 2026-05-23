@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Résultat du quiz{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded-4 text-center">
+                <div class="card-header {% if passed %}bg-success{% else %}bg-danger{% endif %} text-white">
+                    <h2 class="mb-0">Résultat</h2>
+                </div>
+                <div class="card-body">
+                    <h3 class="mb-4">{{ quiz.title }}</h3>
+                    <p class="fs-2 fw-bold">{{ score }}%</p>
+                    <p>Vous avez obtenu <strong>{{ correct }} / {{ total }}</strong> bonnes réponses.</p>
+                    
+                    {% if passed %}
+                        <div class="alert alert-success">
+                            🎉 Félicitations ! Vous avez réussi le quiz.
+                        </div>
+                        <a href="{{ path('app_course_show', {'slug': quiz.module.course.slug}) }}" class="btn btn-primary">
+                            Retour à la formation
+                        </a>
+                    {% else %}
+                        <div class="alert alert-danger">
+                            ❌ Vous n'avez pas atteint le score minimum ({{ quiz.passingScore }}%).  
+                            Vous pouvez réessayer.
+                        </div>
+                        <a href="{{ path('app_quiz_take', {id: quiz.id}) }}" class="btn btn-warning">
+                            Réessayer le quiz
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

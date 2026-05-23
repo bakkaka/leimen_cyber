@@ -33,9 +33,17 @@ class QuestionAdminController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Récupérer les options depuis le champ non mappé
+            $optionsText = $form->get('options')->getData();
+            if ($optionsText && is_string($optionsText)) {
+                $optionsArray = array_filter(array_map('trim', explode("\n", $optionsText)));
+                $question->setOptions($optionsArray);
+            }
+
             $em->persist($question);
             $em->flush();
-            $this->addFlash('success', 'Question créée.');
+
+            $this->addFlash('success', 'Question créée avec succès.');
             return $this->redirectToRoute('app_admin_questions');
         }
 
@@ -48,12 +56,25 @@ class QuestionAdminController extends AbstractController
     #[Route('/edit/{id}', name: 'app_admin_question_edit')]
     public function edit(Question $question, Request $request, EntityManagerInterface $em): Response
     {
+        // Convertir les options existantes (tableau) en texte pour le textarea
+        $originalOptions = $question->getOptions() ? implode("\n", $question->getOptions()) : '';
+
         $form = $this->createForm(QuestionType::class, $question);
         $form->handleRequest($request);
 
+        // Pré-remplir le champ options non mappé
+        $form->get('options')->setData($originalOptions);
+
         if ($form->isSubmitted() && $form->isValid()) {
+            // Récupérer les options depuis le champ non mappé
+            $optionsText = $form->get('options')->getData();
+            if ($optionsText && is_string($optionsText)) {
+                $optionsArray = array_filter(array_map('trim', explode("\n", $optionsText)));
+                $question->setOptions($optionsArray);
+            }
+
             $em->flush();
-            $this->addFlash('success', 'Question modifiée.');
+            $this->addFlash('success', 'Question modifiée avec succès.');
             return $this->redirectToRoute('app_admin_questions');
         }
 

@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Quiz : {{ quiz.title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm rounded-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">{{ quiz.title }}</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ path('app_quiz_submit', {id: quiz.id}) }}">
+                        {% for question in questions %}
+                            <div class="mb-4 p-3 border rounded">
+                                <p class="fw-bold">{{ question.text }}</p>
+                                
+                                {% if question.type == 'multiple_choice' %}
+                                    {% for option in question.options %}
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" 
+                                                   name="answers[{{ question.id }}]" 
+                                                   value="{{ option }}" id="q{{ question.id }}_{{ loop.index }}">
+                                            <label class="form-check-label" for="q{{ question.id }}_{{ loop.index }}">
+                                                {{ option }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                {% elseif question.type == 'true_false' %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" 
+                                               name="answers[{{ question.id }}]" value="Vrai" id="q{{ question.id }}_true">
+                                        <label class="form-check-label" for="q{{ question.id }}_true">Vrai</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" 
+                                               name="answers[{{ question.id }}]" value="Faux" id="q{{ question.id }}_false">
+                                        <label class="form-check-label" for="q{{ question.id }}_false">Faux</label>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <button type="submit" class="btn btn-primary">Soumettre le quiz</button>
+                        <a href="{{ path('app_course_show', {'slug': quiz.module.course.slug}) }}" class="btn btn-secondary">Annuler</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
