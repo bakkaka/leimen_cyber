@@ -50,6 +50,28 @@
                         </div>
 
                         <div class="mb-3">
+                            {{ form_label(registrationForm.age, 'Âge', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-calendar text-muted"></i>
+                                </span>
+                                {{ form_widget(registrationForm.age, {'attr': {'class': 'form-control border-start-0', 'placeholder': 'Ex: 25'}}) }}
+                            </div>
+                            {{ form_errors(registrationForm.age) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.city, 'Ville', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-geo-alt text-muted"></i>
+                                </span>
+                                {{ form_widget(registrationForm.city, {'attr': {'class': 'form-control border-start-0', 'placeholder': 'Ex: Casablanca'}}) }}
+                            </div>
+                            {{ form_errors(registrationForm.city) }}
+                        </div>
+
+                        <div class="mb-3">
                             {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0">

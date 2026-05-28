@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Demande d’inscription par virement</title>
+</head>
+<body>
+    <h1>📧 Nouvelle demande d’inscription</h1>
+    <p><strong>Utilisateur :</strong> {{ user.email }}</p>
+    <p><strong>Nom :</strong> {{ user.fullName|default('Non renseigné') }}</p>
+    <p><strong>Formation :</strong> {{ course.title }}</p>
+    <p><strong>Date :</strong> {{ enrollment.enrolledAt|date('d/m/Y H:i') }}</p>
+    <p><strong>Montant :</strong> {{ (course.price / 100)|number_format(0, ',', ' ') }} MAD</p>
+    <hr>
+    <p>Veuillez vérifier le virement sur votre compte bancaire, puis activer l’inscription depuis l’interface d’administration.</p>
+</body>
+</html>

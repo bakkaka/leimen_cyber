@@ -3,22 +3,88 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
-    <h1>{{ title }}</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h2 class="mb-0">{{ title }}</h2>
+                </div>
+                <div class="card-body p-4">
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-    {{ form_start(form) }}
-        {{ form_row(form.title) }}
-        {{ form_row(form.shortDescription) }}
-        {{ form_row(form.description) }}
-        {{ form_row(form.level) }}
-        {{ form_row(form.price) }}
-        {{ form_row(form.duration) }}
-        {{ form_row(form.whatYouWillLearn) }}
-        {{ form_row(form.requirements) }}
-        {{ form_row(form.targetAudience) }}
-        {{ form_row(form.hasCertificate) }}
-        {{ form_row(form.isPublished) }}
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                {{ form_row(form.title) }}
+                            </div>
+                        </div>
 
-        <button type="submit">Enregistrer</button>
-        <a href="{{ path('app_admin_courses') }}">Annuler</a>
-    {{ form_end(form) }}
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                {{ form_row(form.shortDescription) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                {{ form_row(form.description) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                {{ form_row(form.level) }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                {{ form_row(form.price) }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                {{ form_row(form.duration) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                {{ form_row(form.whatYouWillLearn) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                {{ form_row(form.requirements) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                {{ form_row(form.targetAudience) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3 form-check form-switch">
+                                {{ form_widget(form.hasCertificate, {'attr': {'class': 'form-check-input', 'role': 'switch'}}) }}
+                                {{ form_label(form.hasCertificate, null, {'label_attr': {'class': 'form-check-label ms-2'}}) }}
+                            </div>
+                            <div class="col-md-6 mb-3 form-check form-switch">
+                                {{ form_widget(form.isPublished, {'attr': {'class': 'form-check-input', 'role': 'switch'}}) }}
+                                {{ form_label(form.isPublished, null, {'label_attr': {'class': 'form-check-label ms-2'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('app_admin_courses') }}" class="btn btn-outline-secondary px-4 py-2">
+                                <i class="bi bi-arrow-left me-1"></i> Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary px-5 py-2">
+                                <i class="bi bi-save me-1"></i> Enregistrer
+                            </button>
+                        </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

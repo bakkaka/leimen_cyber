@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bienvenue sur Cyber Formation Maroc</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+<div style="max-width:600px;margin:40px auto;background:white;border-radius:10px;padding:40px;">
+    <h1 style="color:#0d6efd;margin-bottom:20px;">
+        Bonjour {{ user.fullName ?: user.email }}
+    </h1>
+    <p style="font-size:16px;color:#333;line-height:1.6;">
+        Merci de vous être inscrit sur <strong>Cyber Formation Maroc</strong>.
+    </p>
+    <p style="font-size:16px;color:#333;line-height:1.6;">
+        Vous allez recevoir un email de vérification. Cliquez sur le lien pour activer votre compte.
+    </p>
+    <div style="margin-top:30px;">
+        <a href="http://127.0.0.1:8000/login"
+           style="background:#0d6efd;color:white;padding:15px 25px;text-decoration:none;border-radius:5px;display:inline-block;">
+            Se connecter
+        </a>
+    </div>
+</div>
+</body>
+</html>

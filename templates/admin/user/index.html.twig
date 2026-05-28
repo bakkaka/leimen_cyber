@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des utilisateurs{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>👥 Gestion des utilisateurs</h1>
+
+    <a href="{{ path('app_admin_user_new') }}" class="btn btn-primary mb-3">+ Nouvel utilisateur</a>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Nom</th>
+                    <th>Inscrit le</th>
+                    <th>Rôles</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.fullName|default('Non renseigné') }}</td>
+                        <td>{{ user.createdAt|date('d/m/Y') }}</td>
+                        <td>
+                            {% if 'ROLE_ADMIN' in user.roles %}
+                                <span class="badge bg-danger">ADMIN</span>
+                            {% else %}
+                                <span class="badge bg-secondary">USER</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.isActive %}
+                                <span class="badge bg-success">Actif</span>
+                            {% else %}
+                                <span class="badge bg-danger">Désactivé</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" action="{{ path('app_admin_user_toggle_status', {id: user.id}) }}" style="display:inline-block">
+                                <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ user.id) }}">
+                                <button class="btn btn-sm {% if user.isActive %}btn-warning{% else %}btn-success{% endif %}" title="Activer/Désactiver">
+                                    {% if user.isActive %}❌ Désactiver{% else %}✅ Activer{% endif %}
+                                </button>
+                            </form>
+
+                            {% if 'ROLE_ADMIN' not in user.roles %}
+                                <form method="post" action="{{ path('app_admin_user_make_admin', {id: user.id}) }}" style="display:inline-block">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('make-admin' ~ user.id) }}">
+                                    <button class="btn btn-sm btn-primary">👑 Rendre admin</button>
+                                </form>
+                            {% else %}
+                                <form method="post" action="{{ path('app_admin_user_remove_admin', {id: user.id}) }}" style="display:inline-block">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('remove-admin' ~ user.id) }}">
+                                    <button class="btn btn-sm btn-danger">🔻 Retirer admin</button>
+                                </form>
+                            {% endif %}
+
+                            <a href="{{ path('app_admin_user_show', {id: user.id}) }}" class="btn btn-sm btn-info">Détails</a>
+                        </td>
+                    <tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

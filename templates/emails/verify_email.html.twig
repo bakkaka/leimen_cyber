@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Vérification Email</title>
+</head>
+
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+
+<div style="max-width:600px;margin:40px auto;background:white;border-radius:10px;padding:40px;">
+
+    <h1 style="color:#198754;margin-bottom:20px;">
+        Vérification de votre compte
+    </h1>
+
+    <p style="font-size:16px;color:#333;line-height:1.6;">
+        Bonjour {{ user.fullName ?: user.email }},
+    </p>
+
+    <p style="font-size:16px;color:#333;line-height:1.6;">
+        Merci de confirmer votre adresse email afin d’activer votre compte.
+    </p>
+
+    <div style="margin-top:30px;">
+        <a href="{{ signedUrl }}"
+           style="background:#198754;
+                  color:white;
+                  padding:15px 25px;
+                  text-decoration:none;
+                  border-radius:5px;
+                  display:inline-block;">
+            Vérifier mon compte
+        </a>
+    </div>
+
+    <p style="margin-top:30px;color:gray;font-size:13px;">
+        Ce lien expirera automatiquement.
+    </p>
+
+</div>
+
+</body>
+</html>

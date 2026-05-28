@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion détectée</title>
+</head>
+
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+
+<div style="max-width:600px;margin:40px auto;background:white;border-radius:10px;padding:40px;">
+
+    <h1 style="color:#dc3545;margin-bottom:20px;">
+        Nouvelle connexion détectée
+    </h1>
+
+    <p style="font-size:16px;color:#333;">
+        Bonjour {{ user.fullName ?: user.email }},
+    </p>
+
+    <p style="font-size:16px;color:#333;line-height:1.6;">
+        Une connexion à votre compte vient d’être détectée.
+    </p>
+
+    <p style="font-size:16px;color:#333;">
+        Date :
+        {{ "now"|date("d/m/Y H:i") }}
+    </p>
+
+    <p style="font-size:16px;color:#333;">
+        Si ce n’est pas vous, veuillez modifier votre mot de passe immédiatement.
+    </p>
+
+</div>
+
+</body>
+</html>

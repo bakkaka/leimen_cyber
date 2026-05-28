@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class CourseType extends AbstractType
 {
@@ -21,6 +22,10 @@ class CourseType extends AbstractType
                 'label' => 'Titre de la formation',
                 'attr' => ['class' => 'form-control']
             ])
+
+            ->add('slug', HiddenType::class, [
+            'required' => false,
+])
             ->add('shortDescription', TextareaType::class, [
                 'label' => 'Description courte',
                 'required' => false,

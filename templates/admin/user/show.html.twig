@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails : {{ user.email }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="card shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">{{ user.email }}</h2>
+        </div>
+        <div class="card-body">
+            <p><strong>Nom :</strong> {{ user.fullName|default('Non renseigné') }}</p>
+            <p><strong>Âge :</strong> {{ user.age|default('Non renseigné') }}</p>
+            <p><strong>Ville :</strong> {{ user.city|default('Non renseigné') }}</p>
+            <p><strong>Téléphone :</strong> {{ user.phone|default('Non renseigné') }}</p>
+            <p><strong>Inscrit le :</strong> {{ user.createdAt|date('d/m/Y H:i') }}</p>
+            <p><strong>Rôles :</strong> {{ user.roles|join(', ') }}</p>
+            <p><strong>Statut :</strong>
+                {% if user.isActive %}
+                    <span class="badge bg-success">Actif</span>
+                {% else %}
+                    <span class="badge bg-danger">Désactivé</span>
+                {% endif %}
+            </p>
+            <p><strong>Email vérifié :</strong> {{ user.isVerified ? '✅ Oui' : '❌ Non' }}</p>
+        </div>
+    </div>
+
+    <h3>📚 Inscriptions</h3>
+    {% if enrollments|length > 0 %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Cours</th>
+                        <th>Inscrit le</th>
+                        <th>Méthode</th>
+                        <th>Progression</th>
+                        <th>Statut</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enrollment in enrollments %}
+                        <tr>
+                            <td>{{ enrollment.course.title }}</td>
+                            <td>{{ enrollment.enrolledAt|date('d/m/Y') }}</td>
+                            <td>
+                                {% if enrollment.paymentMethod == 'pending_bank' %}
+                                    <span class="badge bg-warning">Virement (en attente)</span>
+                                {% elseif enrollment.paymentMethod == 'stripe' %}
+                                    <span class="badge bg-success">Stripe</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ enrollment.paymentMethod }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ enrollment.progress }}%{% if enrollment.progress >= 100 %} ✅{% endif %}</td>
+                            <td>{{ enrollment.isCompleted ? 'Terminé' : 'En cours' }}</td>
+                            <td>
+                                {% if enrollment.paymentMethod == 'pending_bank' %}
+                                    <form method="post" action="{{ path('app_admin_enrollment_validate', {id: enrollment.id}) }}" style="display:inline-block">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('validate' ~ enrollment.id) }}">
+                                        <button class="btn btn-sm btn-success">✅ Valider le paiement</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>Aucune inscription.</p>
+    {% endif %}
+
+    <h3>📊 Progression par module</h3>
+    {% if moduleProgress|length > 0 %}
+        <ul>
+            {% for progress in moduleProgress %}
+                <li>
+                    <strong>{{ progress.module.title }}</strong> :
+                    {% if progress.completed %}
+                        ✅ Terminé le {{ progress.completedAt|date('d/m/Y') }}
+                        (Quiz: {{ progress.quizScore }}%)
+                    {% else %}
+                        ⏳ Non terminé
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucune progression enregistrée.</p>
+    {% endif %}
+
+    <h3>📝 Tentatives de quiz</h3>
+    {% if quizAttempts|length > 0 %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Quiz</th>
+                        <th>Date</th>
+                        <th>Score</th>
+                        <th>Réussi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attempt in quizAttempts %}
+                        <tr>
+                            <td>{{ attempt.quiz.title }}</td>
+                            <td>{{ attempt.attemptedAt|date('d/m/Y H:i') }}</td>
+                            <td>{{ attempt.score }}%</td>
+                            <td>{{ attempt.passed ? '✅ Oui' : '❌ Non' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>Aucune tentative de quiz.</p>
+    {% endif %}
+</div>
+{% endblock %}

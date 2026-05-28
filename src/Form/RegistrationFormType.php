@@ -7,6 +7,7 @@ use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -35,12 +36,22 @@ class RegistrationFormType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'form-control', 'placeholder' => '+212 6XX XXX XXX']
             ])
+            ->add('age', IntegerType::class, [
+                'label' => 'Âge',
+                'required' => false,
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: 25']
+            ])
+            ->add('city', TextType::class, [
+                'label' => 'Ville',
+                'required' => false,
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: Casablanca']
+            ])
             ->add('agreeTerms', CheckboxType::class, [
                 'label' => 'J\'accepte les conditions d\'utilisation',
                 'mapped' => false,
                 'attr' => ['class' => 'form-check-input'],
                 'constraints' => [
-                    new IsTrue(message: 'Vous devez accepter les conditions d\'utilisation.'),  // ← SYMPHONY 8
+                    new IsTrue(message: 'Vous devez accepter les conditions d\'utilisation.'),
                 ],
             ])
             ->add('plainPassword', PasswordType::class, [
@@ -48,7 +59,7 @@ class RegistrationFormType extends AbstractType
                 'mapped' => false,
                 'attr' => ['autocomplete' => 'new-password', 'class' => 'form-control'],
                 'constraints' => [
-                    new NotBlank(message: 'Veuillez saisir un mot de passe'),  // ← SYMPHONY 8
+                    new NotBlank(message: 'Veuillez saisir un mot de passe'),
                     new Length(
                         min: 6,
                         minMessage: 'Votre mot de passe doit contenir au moins {{ limit }} caractères',

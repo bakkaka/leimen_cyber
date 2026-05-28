@@ -102,18 +102,23 @@
                 </li>
 
                 {# Liens réservés aux administrateurs #}
-                {% if is_granted('ROLE_ADMIN') %}
-                    <li class="nav-item">
-                        <a class="nav-link text-white fw-semibold px-3" href="{{ path('app_admin_prerequisites') }}">
-                            <i class="bi bi-tools"></i> Prérequis
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white fw-semibold px-3" href="{{ path('app_admin_comments') }}">
-                            <i class="bi bi-chat-dots"></i> Modération
-                        </a>
-                    </li>
-                {% endif %}
+      {% if is_granted('ROLE_ADMIN') %}
+         <li class="nav-item">
+        <a class="nav-link text-white fw-semibold px-3" href="{{ path('app_admin_prerequisites') }}">
+            <i class="bi bi-tools"></i> Prérequis
+        </a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link text-white fw-semibold px-3" href="{{ path('app_admin_comments') }}">
+            <i class="bi bi-chat-dots"></i> Modération
+        </a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link text-white fw-semibold px-3" href="{{ path('app_admin_users') }}">
+            <i class="bi bi-people"></i> Utilisateurs
+        </a>
+        </li>
+{% endif %}
 
                 <li class="nav-item">
                     <a class="nav-link text-white fw-semibold px-3" href="#">

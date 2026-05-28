@@ -32,6 +32,38 @@
                     </a>
                 </div>
 
+                <!-- Progression détaillée par module -->
+                <div class="mt-4">
+                    <h5>📌 Modules du cours</h5>
+                    <div class="list-group">
+                        {% for module in enrollment.course.modules %}
+                            {% set moduleProgress = getUserModuleProgress(app.user, module) %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Module {{ module.orderNumber }} : {{ module.title }}</strong>
+                                    {% if moduleProgress and moduleProgress.completed %}
+                                        <span class="badge bg-success ms-2">✅ Terminé</span>
+                                        <small class="text-muted ms-2">le {{ moduleProgress.completedAt|date('d/m/Y') }}</small>
+                                    {% elseif moduleProgress and moduleProgress.quizScore is not null %}
+                                        <span class="badge bg-danger ms-2">❌ Quiz échoué ({{ moduleProgress.quizScore }}%)</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary ms-2">⏳ Non terminé</span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {% if moduleProgress and moduleProgress.completed %}
+                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                    {% elseif moduleProgress and moduleProgress.quizScore is not null %}
+                                        <i class="bi bi-x-circle-fill text-danger"></i>
+                                    {% else %}
+                                        <i class="bi bi-hourglass-split"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
                 <!-- Leçons terminées (cliquables pour révision) -->
                 <div class="mt-4">
                     <h5>📖 Leçons terminées</h5>

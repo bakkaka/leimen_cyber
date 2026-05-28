@@ -5,9 +5,10 @@
 {% block body %}
 <div class="hero-section" style="padding: 60px 0;">
     <div class="container">
+        <h1 class="text-center mb-5 display-3 fw-bold">{{ course.title }}</h1>
+        
         <div class="row align-items-center">
             <div class="col-lg-8">
-                <h1 class="display-4 fw-bold mb-3">{{ course.title }}</h1>
                 <p class="lead text-muted">{{ course.shortDescription|default(course.description|slice(0, 200)) }}</p>
                 <div class="d-flex gap-3 mt-4">
                     <div><i class="bi bi-clock-history" style="color: #FF7F00;"></i> {{ course.duration }} min</div>
@@ -22,35 +23,56 @@
                         
                         {% set isEnrolled = false %}
                         {% set userProgress = 0 %}
+                        {% set enrollmentId = null %}
+                        {% set paymentMethod = null %}
                         {% if app.user %}
                             {% for enrollment in app.user.enrollments %}
                                 {% if enrollment.course.id == course.id %}
                                     {% set isEnrolled = true %}
                                     {% set userProgress = enrollment.progress %}
+                                    {% set enrollmentId = enrollment.id %}
+                                    {% set paymentMethod = enrollment.paymentMethod %}
                                 {% endif %}
                             {% endfor %}
                         {% endif %}
                         
-                        {# LOGIQUE CORRECTE : Je m'inscris d'abord, puis paiement #}
                         {% if not app.user %}
                             <a href="{{ path('app_login') }}" class="btn-cyber w-100 py-2">
                                 <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter pour vous inscrire
                             </a>
                             <small class="text-muted d-block mt-2">Déjà un compte ? Connectez-vous</small>
-                        {% elseif isEnrolled %}
-                            <a href="{{ path('app_course_learn', {slug: course.slug}) }}" class="btn-cyber w-100 py-2">
-                                <i class="bi bi-play-circle me-2"></i>Continuer la formation
-                            </a>
-                            <div class="progress-cyber mt-2">
-                                <div class="progress-cyber-bar" style="width: {{ userProgress }}%"></div>
+                        {% elseif isEnrolled and paymentMethod == 'pending_bank' %}
+                            <div class="alert alert-warning text-center">
+                                ⏳ Votre inscription est en attente de validation après réception du virement.
                             </div>
-                            <div class="text-muted small mt-1">{{ userProgress }}% complété</div>
+                            <p class="text-muted">Vous recevrez un email de confirmation sous 48h.</p>
+                        {% elseif isEnrolled %}
+                            {% if userProgress >= 100 %}
+                                <div class="alert alert-success">
+                                    🎉 Félicitations ! Vous avez terminé cette formation.
+                                </div>
+                                <a href="{{ path('app_certificate_download', {id: enrollmentId}) }}" class="btn-cyber w-100 py-2">
+                                    🏆 Télécharger mon certificat
+                                </a>
+                            {% else %}
+                                <a href="{{ path('app_course_learn', {slug: course.slug}) }}" class="btn-cyber w-100 py-2">
+                                    <i class="bi bi-play-circle me-2"></i>Continuer la formation
+                                </a>
+                                <div class="progress-cyber mt-2">
+                                    <div class="progress-cyber-bar" style="width: {{ userProgress }}%"></div>
+                                </div>
+                                <small class="text-muted">{{ userProgress }}% complété</small>
+                            {% endif %}
                         {% else %}
-                            <a href="{{ path('app_stripe_checkout', {id: course.id}) }}" class="btn-cyber w-100 py-2">
-                                <i class="bi bi-pen me-2"></i>Je m'inscris - {{ (course.price / 100)|number_format(0, ',', ' ') }} MAD
-                            </a>
-
-                            <small class="text-muted d-block mt-2">Paiement sécurisé après inscription</small>
+                            <div class="d-flex flex-column gap-2">
+                                <a href="{{ path('app_stripe_checkout', {id: course.id}) }}" class="btn-cyber w-100 py-2">
+                                    <i class="bi bi-credit-card me-2"></i>S'inscrire - {{ (course.price / 100)|number_format(0, ',', ' ') }} MAD
+                                </a>
+                                <a href="{{ path('app_bank_transfer', {id: course.id}) }}" class="btn-cyber-outline w-100 py-2">
+                                    🏦 Paiement par virement bancaire
+                                </a>
+                            </div>
+                            <small class="text-muted d-block mt-2">Paiement sécurisé</small>
                         {% endif %}
                     </div>
                 </div>
@@ -71,7 +93,7 @@
             
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
-                    <h3>Programme de la formation</h3>
+                    <h3>Programme</h3>
                     {% for module in course.modules %}
                         <div class="border rounded-3 mb-3">
                             <div class="p-3 bg-light">
@@ -80,14 +102,8 @@
                             </div>
                             <div class="p-3">
                                 {% for lesson in module.lessons %}
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <div>
-                                            <i class="bi bi-play-circle me-2" style="color: #FF7F00;"></i>
-                                            {{ lesson.title }}
-                                            {% if lesson.isFreePreview %}
-                                                <span class="badge bg-success ms-2">Extrait gratuit</span>
-                                            {% endif %}
-                                        </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <div><i class="bi bi-play-circle me-2" style="color: #FF7F00;"></i> {{ lesson.title }}</div>
                                         <small>{{ lesson.duration }} min</small>
                                     </div>
                                 {% endfor %}
@@ -99,18 +115,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    .progress-cyber {
-        height: 6px;
-        background: #e9ecef;
-        border-radius: 3px;
-        overflow: hidden;
-    }
-    .progress-cyber-bar {
-        height: 100%;
-        background: linear-gradient(90deg, #FF7F00, #FF9F33);
-        border-radius: 3px;
-    }
-</style>
 {% endblock %}

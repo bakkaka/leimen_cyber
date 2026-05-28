@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Certificat de réussite</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+        }
+        .certificate {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border: 20px solid #FF7F00;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+        .logo {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            width: 100px;
+        }
+        h1 {
+            font-size: 48px;
+            color: #FF7F00;
+            margin-top: 50px;
+        }
+        .student-name {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 30px 0;
+        }
+        .student-info {
+            font-size: 16px;
+            color: #555;
+            margin: 10px 0;
+        }
+        .course-title {
+            font-size: 24px;
+            color: #333;
+            margin: 20px 0;
+        }
+        .date {
+            margin-top: 50px;
+            font-size: 16px;
+        }
+        .certificate-number {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #999;
+        }
+        .signature {
+            margin-top: 60px;
+            font-style: italic;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate">
+        {% if logo_base64 %}
+            <img src="{{ logo_base64 }}" class="logo" alt="Logo">
+        {% endif %}
+        
+        <h1>🎓 Certificat de réussite</h1>
+        <p>Ce certificat est décerné à</p>
+        <div class="student-name">{{ user.fullName|default(user.email) }}</div>
+        
+        {% if user.age or user.city %}
+            <div class="student-info">
+                {% if user.age %}Âge : {{ user.age }} ans{% endif %}
+                {% if user.age and user.city %} | {% endif %}
+                {% if user.city %}Ville : {{ user.city }}{% endif %}
+            </div>
+        {% endif %}
+        
+        <p>pour avoir suivi avec succès la formation</p>
+        <div class="course-title">{{ course.title }}</div>
+        <p>et validé l’ensemble des modules et quiz.</p>
+        
+        <div class="date">Délivré le {{ date|date('d/m/Y') }}</div>
+        <div class="signature">Cyber Formation Maroc</div>
+        <div class="certificate-number">N° {{ certificateNumber }}</div>
+        <div class="footer">Formation certifiante – Accès à vie</div>
+    </div>
+</body>
+</html>

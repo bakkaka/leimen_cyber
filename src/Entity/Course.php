@@ -4,6 +4,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -40,7 +41,7 @@ class Course
     private ?string $title = null;
 
     #[ORM\Column(length: 200, unique: true)]
-    #[Assert\NotBlank]
+    //#[Assert\NotBlank]
     #[Groups(['course:read'])]
     private ?string $slug = null;
 
@@ -87,6 +88,9 @@ class Course
 
     #[ORM\OneToMany(targetEntity: Enrollment::class, mappedBy: 'course')]
     private Collection $enrollments;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $hasCertificate = false;
 
     public function __construct()
     {
@@ -269,5 +273,20 @@ class Course
             }
         }
         return $this;
+    }
+
+    public function hasCertificate(): bool { return $this->hasCertificate; }
+public function setHasCertificate(bool $hasCertificate): static { $this->hasCertificate = $hasCertificate; return $this; }
+
+
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function generateSlug(SluggerInterface $slugger): void
+    {
+        // On vérifie que le titre existe et que le slug n'a pas déjà été généré ou modifié à la main
+        if ($this->title && !$this->slug) {
+            $this->slug = $slugger->slug($this->title)->lower();
+        }
     }
 }

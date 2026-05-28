@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Quiz;
+use App\Entity\UserModuleProgress;
 use App\Entity\UserQuizAttempt;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -78,6 +79,25 @@ class QuizController extends AbstractController
         $attempt->setPassed($passed);
         $em->persist($attempt);
         $em->flush();
+
+        // Mettre à jour la progression du module si le quiz est réussi
+        if ($passed) {
+            $moduleProgress = $em->getRepository(UserModuleProgress::class)->findOneBy([
+                'user' => $user,
+                'module' => $quiz->getModule()
+            ]);
+            if (!$moduleProgress) {
+                $moduleProgress = new UserModuleProgress();
+                $moduleProgress->setUser($user);
+                $moduleProgress->setModule($quiz->getModule());
+            }
+            $moduleProgress->setCompleted(true);
+            $moduleProgress->setCompletedAt(new \DateTime());
+            $moduleProgress->setQuizPassed(true);
+            $moduleProgress->setQuizScore($scorePercent);
+            $em->persist($moduleProgress);
+            $em->flush();
+        }
 
         return $this->render('quiz/result.html.twig', [
             'quiz' => $quiz,

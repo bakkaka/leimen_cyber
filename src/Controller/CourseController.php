@@ -78,6 +78,12 @@ class CourseController extends AbstractController
             return $this->redirectToRoute('app_course_show', ['slug' => $slug]);
         }
         
+        // Si la formation est déjà terminée (100%), rediriger vers la page du cours
+        if ($enrollment->getProgress() >= 100) {
+            $this->addFlash('info', '🎉 Félicitations ! Vous avez déjà terminé cette formation.');
+            return $this->redirectToRoute('app_course_show', ['slug' => $slug]);
+        }
+        
         // Chercher la première leçon non terminée
         foreach ($course->getModules() as $module) {
             foreach ($module->getLessons() as $lesson) {
@@ -94,7 +100,7 @@ class CourseController extends AbstractController
             }
         }
         
-        // Toutes les leçons sont terminées
+        // Toutes les leçons sont terminées (cas improbable car on a déjà testé 100% plus haut)
         $this->addFlash('success', '🎉 Félicitations ! Vous avez terminé toutes les leçons de cette formation.');
         return $this->redirectToRoute('app_course_show', ['slug' => $slug]);
     }
@@ -192,6 +198,18 @@ class CourseController extends AbstractController
             'isPublished' => true
         ]);
 
+        // Calcul de la progression du module uniquement
+        $moduleLessons = $lesson->getModule()->getLessons();
+        $moduleTotal = count($moduleLessons);
+        $moduleCompleted = 0;
+        foreach ($moduleLessons as $l) {
+            $p = $em->getRepository(UserLessonProgress::class)->findOneBy(['student' => $user, 'lesson' => $l]);
+            if ($p && $p->isCompleted()) {
+                $moduleCompleted++;
+            }
+        }
+        $moduleProgressPercent = $moduleTotal > 0 ? round(($moduleCompleted / $moduleTotal) * 100) : 0;
+
         return $this->render('course/learn.html.twig', [
             'course' => $course,
             'lesson' => $lesson,
@@ -202,6 +220,7 @@ class CourseController extends AbstractController
                 'completed' => $completedLessons,
                 'total' => $totalLessons
             ],
+            'moduleProgress' => $moduleProgressPercent,
             'prevLesson' => $prevLesson,
             'nextLesson' => $nextLesson,
             'hasNextLessonInSameModule' => $hasNextLessonInSameModule,

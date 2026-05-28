@@ -3,10 +3,6 @@
 {% block title %}{{ lesson.title }} - {{ course.title }}{% endblock %}
 
 {% block body %}
-
-
-
-
 <div class="container-fluid py-4">
     <div class="row">
         <!-- Sidebar gauche -->
@@ -15,16 +11,15 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ course.title }}</h5>
                     <div class="progress mb-3">
-                        <div class="progress-bar bg-success" role="progressbar" 
-                             style="width: {{ stats.percentage }}%" 
-                             aria-valuenow="{{ stats.percentage }}" 
-                             aria-valuemin="0" 
-                             aria-valuemax="100">
-                            {{ stats.percentage }}%
-                        </div>
-                    </div>
-                    <small class="text-muted">{{ stats.completed }}/{{ stats.total }} leçons</small>
-                    <hr>
+    <div class="progress-bar bg-success" role="progressbar" 
+         style="width: {{ moduleProgress }}%" 
+         aria-valuenow="{{ moduleProgress }}" 
+         aria-valuemin="0" 
+         aria-valuemax="100">
+        {{ moduleProgress }}%
+    </div>
+</div>
+<small class="text-muted">Progression du module</small>
 
                     {# LIEN VERS MES FORMATIONS #}
                     <div class="mb-3">

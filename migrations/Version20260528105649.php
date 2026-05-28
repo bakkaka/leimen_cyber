@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260523141835 extends AbstractMigration
+final class Version20260528105649 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -27,9 +27,11 @@ final class Version20260523141835 extends AbstractMigration
         $this->addSql('ALTER TABLE module ADD CONSTRAINT FK_C242628591CC992 FOREIGN KEY (course_id) REFERENCES course (id)');
         $this->addSql('ALTER TABLE question ADD CONSTRAINT FK_B6F7494E853CD175 FOREIGN KEY (quiz_id) REFERENCES quiz (id)');
         $this->addSql('ALTER TABLE quiz ADD CONSTRAINT FK_A412FA92AFC2B591 FOREIGN KEY (module_id) REFERENCES module (id)');
+        $this->addSql('ALTER TABLE user ADD age INT DEFAULT NULL, ADD city VARCHAR(100) DEFAULT NULL');
         $this->addSql('ALTER TABLE user_lesson_progress ADD CONSTRAINT FK_789AD4D0CB944F1A FOREIGN KEY (student_id) REFERENCES `user` (id)');
         $this->addSql('ALTER TABLE user_lesson_progress ADD CONSTRAINT FK_789AD4D0CDF80196 FOREIGN KEY (lesson_id) REFERENCES lesson (id)');
-        $this->addSql('DROP INDEX unique_user_quiz ON user_quiz_attempt');
+        $this->addSql('ALTER TABLE user_module_progress ADD CONSTRAINT FK_541D4D37A76ED395 FOREIGN KEY (user_id) REFERENCES `user` (id)');
+        $this->addSql('ALTER TABLE user_module_progress ADD CONSTRAINT FK_541D4D37AFC2B591 FOREIGN KEY (module_id) REFERENCES module (id)');
         $this->addSql('ALTER TABLE user_quiz_attempt ADD CONSTRAINT FK_8A7AD3C4A76ED395 FOREIGN KEY (user_id) REFERENCES `user` (id)');
         $this->addSql('ALTER TABLE user_quiz_attempt ADD CONSTRAINT FK_8A7AD3C4853CD175 FOREIGN KEY (quiz_id) REFERENCES quiz (id)');
     }
@@ -44,10 +46,12 @@ final class Version20260523141835 extends AbstractMigration
         $this->addSql('ALTER TABLE module DROP FOREIGN KEY FK_C242628591CC992');
         $this->addSql('ALTER TABLE question DROP FOREIGN KEY FK_B6F7494E853CD175');
         $this->addSql('ALTER TABLE quiz DROP FOREIGN KEY FK_A412FA92AFC2B591');
+        $this->addSql('ALTER TABLE `user` DROP age, DROP city');
         $this->addSql('ALTER TABLE user_lesson_progress DROP FOREIGN KEY FK_789AD4D0CB944F1A');
         $this->addSql('ALTER TABLE user_lesson_progress DROP FOREIGN KEY FK_789AD4D0CDF80196');
+        $this->addSql('ALTER TABLE user_module_progress DROP FOREIGN KEY FK_541D4D37A76ED395');
+        $this->addSql('ALTER TABLE user_module_progress DROP FOREIGN KEY FK_541D4D37AFC2B591');
         $this->addSql('ALTER TABLE user_quiz_attempt DROP FOREIGN KEY FK_8A7AD3C4A76ED395');
         $this->addSql('ALTER TABLE user_quiz_attempt DROP FOREIGN KEY FK_8A7AD3C4853CD175');
-        $this->addSql('CREATE UNIQUE INDEX unique_user_quiz ON user_quiz_attempt (user_id, quiz_id)');
     }
 }

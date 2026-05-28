@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmation d'inscription</title>
+</head>
+<body>
+    <h1>Bonjour {{ user.fullName ?: user.email }}</h1>
+    <p>Merci de confirmer votre compte en cliquant sur le lien ci-dessous :</p>
+    <a href="{{ confirmationUrl }}">Activer mon compte</a>
+    <p>Ce lien expire automatiquement.</p>
+</body>
+</html>

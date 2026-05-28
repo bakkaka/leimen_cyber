@@ -107,6 +107,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'author')]
     private Collection $comments;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isActive = true;
+
+
+   #[ORM\Column(length: 255, nullable: true)]
+   private ?string $emailVerificationToken = null;
+
+   #[ORM\Column(length: 255, nullable: true)]
+private ?string $confirmationToken = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
+    private ?int $age = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
+    private ?string $city = null;
+ 
+
+
     public function __construct()
     {
         $this->enrollments = new ArrayCollection();
@@ -294,4 +314,44 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     public function getComments(): Collection { return $this->comments; }
+
+    public function isActive(): bool { return $this->isActive; }
+public function setIsActive(bool $isActive): static { $this->isActive = $isActive; return $this; }
+
+public function getEmailVerificationToken(): ?string
+{
+    return $this->emailVerificationToken;
+}
+
+public function setEmailVerificationToken(?string $emailVerificationToken): static
+{
+    $this->emailVerificationToken = $emailVerificationToken;
+    return $this;
+}
+
+public function getConfirmationToken(): ?string { return $this->confirmationToken; }
+public function setConfirmationToken(?string $confirmationToken): static { $this->confirmationToken = $confirmationToken; return $this; }
+
+    public function getAge(): ?int
+    {
+        return $this->age;
+    }
+
+    public function setAge(?int $age): static
+    {
+        $this->age = $age;
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): static
+    {
+        $this->city = $city;
+        return $this;
+    }
+
 }

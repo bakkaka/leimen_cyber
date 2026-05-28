@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Instructions de paiement par virement</title>
+</head>
+<body>
+    <h1>Merci {{ user.fullName|default(user.email) }} !</h1>
+    <p>Vous avez choisi de payer par virement bancaire.</p>
+    <p>Veuillez effectuer le virement de <strong>{{ (course.price / 100)|number_format(0, ',', ' ') }} MAD</strong> sur le compte suivant :</p>
+    
+    {% for bank in bankAccounts %}
+        <div style="border:1px solid #ccc; margin:10px 0; padding:10px;">
+            <strong>{{ bank.name }}</strong><br>
+            Titulaire : {{ bank.account_name }}<br>
+            RIB : {{ bank.rib }}<br>
+            SWIFT : {{ bank.swift }}<br>
+        </div>
+    {% endfor %}
+    
+    <p>Après réception du virement, votre compte sera activé sous 48h.</p>
+    <p>Merci de votre confiance.</p>
+    <hr>
+    <p><strong>Cyber Formation Maroc</strong></p>
+</body>
+</html>

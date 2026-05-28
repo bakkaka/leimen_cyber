@@ -32,6 +32,7 @@ class HomeController extends AbstractController
         }
         
         return $this->render('home/index.html.twig', [
+            'courses' => $latestCourses,           // ← AJOUT : pour les templates qui utilisent 'courses'
             'latestCourses' => $latestCourses,
             'beginnerCourses' => $beginnerCourses,
             'intermediateCourses' => $intermediateCourses,

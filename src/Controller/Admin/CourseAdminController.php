@@ -35,7 +35,7 @@ class CourseAdminController extends AbstractController
         
         if ($form->isSubmitted() && $form->isValid()) {
             // Conversion des champs texte en JSON
-            $this->convertTextareaToJson($form, $course);
+           // $this->convertTextareaToJson($form, $course);
             
             $slug = $slugger->slug($course->getTitle())->lower();
             $course->setSlug($slug);
@@ -61,7 +61,7 @@ class CourseAdminController extends AbstractController
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->convertTextareaToJson($form, $course);
+           // $this->convertTextareaToJson($form, $course);
             
             $slug = $slugger->slug($course->getTitle())->lower();
             $course->setSlug($slug);
