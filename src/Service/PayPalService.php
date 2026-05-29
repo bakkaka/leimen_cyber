@@ -48,13 +48,17 @@ class PayPalService
         ];
 
         $response = $this->client->execute($request);
-        return $response->result;
+        
+        // Convertir l'objet stdClass en tableau
+        return json_decode(json_encode($response->result), true);
     }
 
     public function captureOrder(string $orderId): array
     {
         $request = new OrdersCaptureRequest($orderId);
         $response = $this->client->execute($request);
-        return $response->result;
+        
+        // Convertir l'objet stdClass en tableau
+        return json_decode(json_encode($response->result), true);
     }
 }
