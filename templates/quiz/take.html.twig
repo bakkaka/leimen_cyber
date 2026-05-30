@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Quiz : {{ quiz.title }}{% endblock %}
+{% block title %}Quiz : {{ quiz.title }} - Cyber Formation Maroc{% endblock %}
+{% block description %}Testez vos connaissances avec le quiz "{{ quiz.title }}". Validez votre module et obtenez votre certificat.{% endblock %}
 
 {% block body %}
 <div class="container mt-5">
@@ -8,7 +9,7 @@
         <div class="col-md-8">
             <div class="card shadow-sm rounded-4">
                 <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">{{ quiz.title }}</h2>
+                    <h1 class="h2 mb-0">{{ quiz.title }}</h1>
                 </div>
                 <div class="card-body">
                     <form method="post" action="{{ path('app_quiz_submit', {id: quiz.id}) }}">
@@ -42,8 +43,8 @@
                             </div>
                         {% endfor %}
 
-                        <button type="submit" class="btn btn-primary">Soumettre le quiz</button>
-                        <a href="{{ path('app_course_show', {'slug': quiz.module.course.slug}) }}" class="btn btn-secondary">Annuler</a>
+                        <button type="submit" class="btn-cyber">Soumettre le quiz</button>
+                        <a href="{{ path('app_course_show', {'slug': quiz.module.course.slug}) }}" class="btn-cyber-outline ms-2">Annuler</a>
                     </form>
                 </div>
             </div>

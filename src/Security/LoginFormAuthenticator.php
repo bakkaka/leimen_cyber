@@ -29,11 +29,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public function authenticate(Request $request): Passport
     {
-        // DEBUG - Voir les données reçues
-        dump('=== DONNÉES REÇUES ===');
-        dump('Email: ' . $request->getPayload()->getString('email'));
-        dump('Password: ' . $request->getPayload()->getString('password'));
-        dump('CSRF: ' . $request->getPayload()->getString('_csrf_token'));
+        
         
         $email = $request->getPayload()->getString('email');
         $password = $request->getPayload()->getString('password');
@@ -52,8 +48,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        dump('=== CONNEXION RÉUSSIE ===');
-        dump('Utilisateur: ' . $token->getUserIdentifier());
+       
         
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);

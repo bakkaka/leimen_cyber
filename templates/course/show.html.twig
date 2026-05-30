@@ -1,19 +1,23 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ course.title }} - Cyber Formation Maroc{% endblock %}
+{% block description %}{{ course.shortDescription|default(course.description|striptags|slice(0, 160)) }}{% endblock %}
+{% block og_title %}{{ course.title }} - Cyber Formation Maroc{% endblock %}
+{% block og_description %}{{ course.shortDescription|default(course.description|striptags|slice(0, 160)) }}{% endblock %}
+{% block og_url %}{{ app.request.uri }}{% endblock %}
 
 {% block body %}
-<div class="hero-section" style="padding: 60px 0;">
+<div class="hero-section">
     <div class="container">
-        <h1 class="text-center mb-5 display-3 fw-bold">{{ course.title }}</h1>
+        <h1 class="hero-title text-center">{{ course.title }}</h1>
         
-        <div class="row align-items-center">
+        <div class="row align-items-center mt-5">
             <div class="col-lg-8">
-                <p class="lead text-muted">{{ course.shortDescription|default(course.description|slice(0, 200)) }}</p>
+                <p class="lead">{{ course.shortDescription|default(course.description|striptags|slice(0, 200)) }}</p>
                 <div class="d-flex gap-3 mt-4">
-                    <div><i class="bi bi-clock-history" style="color: #FF7F00;"></i> {{ course.duration }} min</div>
-                    <div><i class="bi bi-folder" style="color: #FF7F00;"></i> {{ course.modules|length }} modules</div>
-                    <div><i class="bi bi-play-circle" style="color: #FF7F00;"></i> {{ course.modules|reduce((total, module) => total + module.lessons|length, 0) }} leçons</div>
+                    <div><i class="bi bi-clock-history"></i> {{ course.duration }} min</div>
+                    <div><i class="bi bi-folder"></i> {{ course.modules|length }} modules</div>
+                    <div><i class="bi bi-play-circle"></i> {{ course.modules|reduce((total, module) => total + module.lessons|length, 0) }} leçons</div>
                 </div>
             </div>
             <div class="col-lg-4">
@@ -86,14 +90,14 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm rounded-4 mb-4">
                 <div class="card-body p-4">
-                    <h3>Description</h3>
+                    <h2>Description</h2>
                     {{ course.description|raw }}
                 </div>
             </div>
             
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
-                    <h3>Programme</h3>
+                    <h2>Programme de la formation</h2>
                     {% for module in course.modules %}
                         <div class="border rounded-3 mb-3">
                             <div class="p-3 bg-light">
@@ -103,7 +107,7 @@
                             <div class="p-3">
                                 {% for lesson in module.lessons %}
                                     <div class="d-flex justify-content-between mb-2">
-                                        <div><i class="bi bi-play-circle me-2" style="color: #FF7F00;"></i> {{ lesson.title }}</div>
+                                        <div><i class="bi bi-play-circle me-2"></i> {{ lesson.title }}</div>
                                         <small>{{ lesson.duration }} min</small>
                                     </div>
                                 {% endfor %}

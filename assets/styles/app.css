@@ -394,6 +394,7 @@ body {
     height: 100%;
     background: linear-gradient(90deg, var(--cyber-orange), #FF9F33);
     border-radius: 3px;
+    transition: width 0.3s ease;
 }
 
 /* ============================================
@@ -631,73 +632,199 @@ body {
     animation: fadeInUp 0.6s ease-out forwards;
 }
 
-.btn-cyber {
-    background: #FF7F00;
-    border: none;
-    color: white;
-    padding: 10px 24px;
-    border-radius: 50px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
 }
-.btn-cyber:hover {
-    background: #E67300;
-    color: white;
-    transform: translateY(-2px);
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
-.btn-cyber-outline {
-    background: transparent;
-    border: 2px solid #FF7F00;
+
+.btn-lg {
+    padding: 12px 32px;
+    font-size: 1.1rem;
+}
+
+.g-4 {
+    gap: 1.5rem;
+}
+
+/* ============================================
+   SPÉCIFIQUE À LA PAGE COURSE/INDEX
+   ============================================ */
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-lg {
+    padding: 12px 32px;
+    font-size: 1.1rem;
+}
+
+.g-4 {
+    gap: 1.5rem;
+}
+
+/* Icônes dans les cartes */
+.bi-clock-history,
+.bi-folder,
+.bi-play-circle {
     color: #FF7F00;
-    padding: 10px 24px;
-    border-radius: 50px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
+    margin-right: 0.5rem;
 }
-.btn-cyber-outline:hover {
-    background: #FF7F00;
-    color: white;
-    transform: translateY(-2px);
+
+/* Ajustement des badges de niveau */
+.badge-success {
+    background-color: var(--cyber-green);
 }
-.progress-cyber {
-    height: 8px;
-    background: #e9ecef;
-    border-radius: 4px;
+
+.badge-warning {
+    background-color: var(--cyber-yellow);
+    color: #1a1a1a;
+}
+
+.badge-danger {
+    background-color: var(--cyber-red);
+}
+
+/* Vidéo placeholder (extraits gratuits) */
+.video-placeholder {
+    position: relative;
+    cursor: pointer;
+    background: #000;
+    border-radius: 15px;
     overflow: hidden;
-}
-.progress-cyber-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #FF7F00, #FF9F33);
-    border-radius: 4px;
-    transition: width 0.3s ease;
+    transition: var(--transition);
 }
 
-.btn-cyber,
-.btn-cyber-outline {
-    position: relative;
-    z-index: 999;
+.video-placeholder:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-md);
 }
 
-.d-flex.justify-content-between {
-    overflow: visible !important;
+.video-placeholder img {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
-.ratio iframe {
-    position: relative;
-    z-index: 1;
+.video-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 127, 0, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    cursor: pointer;
+    z-index: 10;
 }
 
-.card-body {
-    position: relative;
-    z-index: 2;
+.video-play-btn:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    background: var(--cyber-orange);
 }
 
-.d-flex.justify-content-between.align-items-center {
-    position: relative;
-    z-index: 9999;
-    margin-top: 30px !important;
+.video-play-btn i {
+    font-size: 2rem;
+    color: white;
+    margin-left: 5px;
+}
+
+@media (max-width: 768px) {
+    .video-play-btn {
+        width: 50px;
+        height: 50px;
+    }
+    .video-play-btn i {
+        font-size: 1.5rem;
+    }
+}
+
+/* ============================================
+   SPÉCIFIQUE À LA PAGE COURSE/SHOW
+   ============================================ */
+.hero-section .hero-title {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .hero-section .hero-title {
+        font-size: 1.75rem;
+    }
+}
+
+/* ============================================
+   SPÉCIFIQUE À LA PAGE LEARN (APPRENTISSAGE)
+   ============================================ */
+.ratio-16x9 {
+    aspect-ratio: 16 / 9;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+}
+
+.btn-outline-primary {
+    background: transparent;
+    border: 1px solid var(--cyber-orange);
+    color: var(--cyber-orange);
+}
+
+.btn-outline-primary:hover {
+    background: var(--cyber-orange);
+    color: white;
+}
+
+.alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border-radius: 0.5rem;
+}
+
+/* ============================================
+   SPÉCIFIQUE À LA PAGE MES FORMATIONS
+   ============================================ */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0.75rem 1rem;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* ============================================
+   SPÉCIFIQUE À LA PAGE QUIZ
+   ============================================ */
+.form-check-input:checked {
+    background-color: var(--cyber-orange);
+    border-color: var(--cyber-orange);
 }

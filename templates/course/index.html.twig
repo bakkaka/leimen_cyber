@@ -1,16 +1,18 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Formations Cybersécurité - Cours pratiques au Maroc{% endblock %}
+{% block description %}Découvrez nos formations en cybersécurité au Maroc. Débutant, intermédiaire ou avancé. Certificat officiel offert.{% endblock %}
+{% block og_title %}Formations Cybersécurité - Cyber Formation Maroc{% endblock %}
+{% block og_description %}Formez-vous à la cybersécurité. Cours pratiques, vidéos HD, certificat officiel. Inscription en ligne.{% endblock %}
+{% block og_image %}{{ absolute_url(asset('assets/images/cyber-og.jpg')) }}{% endblock %}
 
 {% block body %}
 <div class="hero-section">
     <div class="container text-center">
         <div class="hero-badge">🔥 Formations certifiantes 🔥</div>
         <h1 class="hero-title">Maîtrisez la Cybersécurité</h1>
-        <p class="lead text-white-50 mb-4">
-            +50 étudiants formés · Certificat offert · Support 24/7
-        </p>
-        <div class="d-flex gap-3 justify-content-center">
+        <p class="hero-subtitle">+50 étudiants formés · Certificat offert · Support 24/7</p>
+        <div class="hero-buttons">
             <a href="#formations" class="btn-cyber btn-lg">📚 Voir les formations</a>
             <a href="#extraits" class="btn-cyber-outline btn-lg">▶️ Extraits gratuits</a>
         </div>
@@ -18,7 +20,7 @@
 </div>
 
 <div class="container py-5" id="formations">
-    <h2 class="text-center mb-5" data-aos="fade-up">📚 Nos formations</h2>
+    <h2 class="text-center mb-5">📚 Nos formations</h2>
     
     {% set levels = [
         {'name': 'beginner', 'label': 'Débutant', 'icon': 'star-fill', 'color': 'success', 'courses': beginnerCourses},
@@ -34,23 +36,23 @@
                 Niveau {{ level.label }}
                 <span class="badge bg-{{ level.color }} ms-2">{{ level.courses|length }} formations</span>
             </h3>
-            <div class="row">
+            <div class="row g-4">
                 {% for course in level.courses %}
-                <div class="col-md-6 col-lg-4 mb-4">
+                <div class="col-md-6 col-lg-4">
                     <div class="course-card">
                         <div class="course-image">
                             {% if course.imageUrl %}
                                 <img src="{{ course.imageUrl }}" alt="{{ course.title }}" loading="lazy">
                             {% else %}
-                                <i class="bi bi-shield-shaded display-1 text-white-50"></i>
+                                <i class="bi bi-shield-shaded"></i>
                             {% endif %}
                             <span class="course-badge badge-{{ level.name }}">{{ level.label }}</span>
                         </div>
                         <div class="course-content">
-                            <h3 class="course-title">{{ course.title }}</h3>
-                            <div class="course-description">
-                                {{ course.shortDescription|default(course.description|slice(0, 100)) }}...
-                            </div>
+                            <h4 class="course-title">{{ course.title }}</h4>
+                            <p class="course-description">
+                                {{ course.shortDescription|default(course.description|striptags|slice(0, 100)) }}...
+                            </p>
                             <div class="course-meta">
                                 <span><i class="bi bi-clock"></i> {{ course.duration }} min</span>
                                 <span><i class="bi bi-play-circle"></i> {{ course.modules|length }} modules</span>
@@ -58,7 +60,7 @@
                             <div class="course-price">
                                 {{ (course.price / 100)|number_format(0, ',', ' ') }} MAD
                             </div>
-                            <a href="{{ path('app_course_show', {'slug': course.slug}) }}" class="btn-cyber w-100 text-center d-block">
+                            <a href="{{ path('app_course_show', {'slug': course.slug}) }}" class="btn-cyber w-100">
                                 📖 Voir les détails
                             </a>
                         </div>
@@ -73,37 +75,22 @@
 
 <div id="extraits" class="bg-light py-5">
     <div class="container">
-        <h2 class="text-center mb-5" data-aos="fade-up">🎬 Extraits gratuits</h2>
-        <div class="row">
-            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="video-placeholder" 
-                     data-video-id="dQw4w9WgXcQ" 
-                     data-platform="youtube"
-                     data-video-title="Pourquoi vos mots de passe sont faibles ?">
-                    <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" 
-                         alt="Miniature vidéo" 
-                         style="width: 100%;">
-                    <div class="video-play-btn">
-                        <i class="bi bi-play-fill"></i>
-                    </div>
+        <h2 class="text-center mb-5">🎬 Extraits gratuits</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="video-placeholder" data-video-id="dQw4w9WgXcQ" data-platform="youtube" data-video-title="Pourquoi vos mots de passe sont faibles ?">
+                    <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Miniature vidéo" class="w-100">
+                    <div class="video-play-btn"><i class="bi bi-play-fill"></i></div>
                     <div class="p-3 bg-white">
                         <h5>Pourquoi vos mots de passe sont faibles ?</h5>
                         <p class="text-muted small">Extrait de 12 min</p>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="video-placeholder" 
-                     data-video-id="dQw4w9WgXcQ" 
-                     data-platform="youtube"
-                     data-video-title="Le phishing expliqué">
-                    <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" 
-                         alt="Miniature vidéo" 
-                         style="width: 100%;">
-                    <div class="video-play-btn">
-                        <i class="bi bi-play-fill"></i>
-                    </div>
+            <div class="col-md-4">
+                <div class="video-placeholder" data-video-id="dQw4w9WgXcQ" data-platform="youtube" data-video-title="Le phishing expliqué">
+                    <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Miniature vidéo" class="w-100">
+                    <div class="video-play-btn"><i class="bi bi-play-fill"></i></div>
                     <div class="p-3 bg-white">
                         <h5>Le phishing expliqué simplement</h5>
                         <p class="text-muted small">Extrait de 15 min</p>

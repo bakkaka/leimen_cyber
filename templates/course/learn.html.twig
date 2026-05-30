@@ -1,6 +1,10 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ lesson.title }} - {{ course.title }}{% endblock %}
+{% block description %}Suivez la leçon "{{ lesson.title }}" de la formation {{ course.title }}. Vidéo, points clés et quiz inclus.{% endblock %}
+{% block og_title %}{{ lesson.title }} - {{ course.title }}{% endblock %}
+{% block og_description %}Apprenez la cybersécurité avec notre formation {{ course.title }}. Leçon : {{ lesson.title }}.{% endblock %}
+{% block og_url %}{{ app.request.uri }}{% endblock %}
 
 {% block body %}
 <div class="container-fluid py-4">
@@ -10,25 +14,23 @@
             <div class="card shadow-sm rounded-4">
                 <div class="card-body">
                     <h5 class="card-title">{{ course.title }}</h5>
-                    <div class="progress mb-3">
-    <div class="progress-bar bg-success" role="progressbar" 
-         style="width: {{ moduleProgress }}%" 
-         aria-valuenow="{{ moduleProgress }}" 
-         aria-valuemin="0" 
-         aria-valuemax="100">
-        {{ moduleProgress }}%
-    </div>
-</div>
-<small class="text-muted">Progression du module</small>
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ moduleProgress }}%" 
+                             aria-valuenow="{{ moduleProgress }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                            {{ moduleProgress }}%
+                        </div>
+                    </div>
+                    <small class="text-muted">Progression du module</small>
 
-                    {# LIEN VERS MES FORMATIONS #}
-                    <div class="mb-3">
+                    <div class="mb-3 mt-3">
                         <a href="{{ path('app_my_courses') }}" class="text-decoration-none">
                             <i class="bi bi-grid-3x3-gap-fill me-1"></i> 📚 Mes formations
                         </a>
                     </div>
 
-                    {# SECTION PRÉREQUIS #}
                     <div class="mb-4 pb-2 border-bottom">
                         <div class="fw-bold mb-2">
                             <i class="bi bi-tools text-warning"></i> 🛠️ Avant de commencer
@@ -42,7 +44,6 @@
                         </ul>
                     </div>
 
-                    {# LIEN VERS TOUTES LES LEÇONS #}
                     <div class="mb-3">
                         <a href="{{ path('app_course_show', {'slug': course.slug}) }}" class="text-decoration-none">
                             <i class="bi bi-arrow-left-circle me-1"></i> Retour au programme du cours
@@ -71,13 +72,12 @@
         <div class="col-md-8 col-lg-9">
             <div class="card shadow-sm rounded-4">
                 <div class="card-body p-4">
-                    <h2>{{ lesson.title }}</h2>
+                    <h1 class="h2">{{ lesson.title }}</h1>
 
                     {% if lesson.teaser %}
                         <div class="alert alert-info">{{ lesson.teaser }}</div>
                     {% endif %}
 
-                    <!-- Lecteur vidéo -->
                     <div class="ratio ratio-16x9 mb-4">
                         <iframe src="{{ lesson.videoUrl }}" allowfullscreen></iframe>
                     </div>
@@ -86,9 +86,8 @@
                         <div class="mt-4">{{ lesson.content|raw }}</div>
                     {% endif %}
 
-                    <!-- ========== NAVIGATION SIMPLIFIÉE (protégée contre les null) ========== -->
+                    <!-- Navigation -->
                     <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                        <!-- Bouton précédent -->
                         <div>
                             {% if prevLesson and prevLesson.id %}
                                 <a href="{{ path('app_course_lesson', {courseSlug: course.slug, lessonId: prevLesson.id}) }}" class="btn btn-secondary">
@@ -99,7 +98,6 @@
                             {% endif %}
                         </div>
 
-                        <!-- Bouton central -->
                         <div>
                             {% if hasNextLessonInSameModule and not progress.completed %}
                                 <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
@@ -109,18 +107,16 @@
                                     </button>
                                 </form>
                             {% elseif not hasNextLessonInSameModule and not progress.completed and moduleQuiz is defined and moduleQuiz %}
-    {# Dernière leçon du module, pas encore terminée #}
-    <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
-        <input type="hidden" name="_token" value="{{ csrf_token('complete_' ~ lesson.id) }}">
-        <input type="hidden" name="_redirect" value="{{ path('app_quiz_take', {id: moduleQuiz.id}) }}">
-        <button type="submit" class="btn btn-warning btn-lg">
-            🏆 Terminer le module et passer le quiz
-        </button>
-    </form>
+                                <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('complete_' ~ lesson.id) }}">
+                                    <input type="hidden" name="_redirect" value="{{ path('app_quiz_take', {id: moduleQuiz.id}) }}">
+                                    <button type="submit" class="btn btn-warning btn-lg">
+                                        🏆 Terminer le module et passer le quiz
+                                    </button>
+                                </form>
                             {% endif %}
                         </div>
 
-                        <!-- Bouton suivant -->
                         <div>
                             {% if hasNextLessonInSameModule and nextLesson and nextLesson.id %}
                                 <form method="post" action="{{ path('app_lesson_complete', {'id': lesson.id}) }}" class="d-inline">
@@ -136,7 +132,6 @@
                         </div>
                     </div>
 
-                    {# Lien direct vers le quiz (si ce n'est pas déjà fait et que la leçon est terminée) #}
                     {% if not hasNextLessonInSameModule and progress.completed and moduleQuiz is defined and moduleQuiz %}
                         <div class="mt-4 text-center">
                             <a href="{{ path('app_quiz_take', {id: moduleQuiz.id}) }}" class="btn btn-warning btn-lg">

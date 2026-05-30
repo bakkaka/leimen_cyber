@@ -197,3 +197,48 @@ function initLessonCompletion() {
         };
     }
 }
+
+// ============================================
+// LECTURE DES EXTRAITS VIDÉO (PAGE COURSE/INDEX)
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    const videoPlaceholders = document.querySelectorAll('.video-placeholder');
+    
+    if (videoPlaceholders.length === 0) return;
+    
+    videoPlaceholders.forEach(placeholder => {
+        placeholder.addEventListener('click', function() {
+            const videoId = this.dataset.videoId;
+            const platform = this.dataset.platform;
+            const videoTitle = this.dataset.videoTitle;
+            
+            if (platform === 'youtube') {
+                const iframe = document.createElement('iframe');
+                iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                iframe.width = '100%';
+                iframe.height = '315';
+                iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+                iframe.allowFullscreen = true;
+                
+                // Remplacer le contenu du placeholder par l'iframe
+                this.innerHTML = '';
+                this.appendChild(iframe);
+            }
+            // Ajouter d'autres plateformes si besoin (Vimeo, etc.)
+        });
+    });
+});
+
+// ============================================
+// INTERACTIONS POUR LA PAGE LEARN
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-resize des textareas (commentaires)
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(textarea => {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    });
+});
