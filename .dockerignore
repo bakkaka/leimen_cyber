@@ -1,0 +1,8 @@
+.git
+.gitignore
+.env
+.railway
+Dockerfile
+README.md
+var/cache
+var/log
