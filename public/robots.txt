@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /profile/
+Disallow: /quiz/
+Disallow: /certificate/
+Disallow: /formation/*/learn
+Disallow: /lesson/*/complete
+
+Sitemap: https://cyberleimen.com/sitemap.xml

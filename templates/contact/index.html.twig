@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact - Cyber Formation Maroc{% endblock %}
+{% block description %}Contactez-nous pour toute question sur nos formations en cybersécurité.{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h1 class="h2 mb-0">📬 Contactez-nous</h1>
+                </div>
+                <div class="card-body p-5">
+                    <p class="text-muted text-center mb-4">
+                        Une question ? Une suggestion ? Écrivez-nous, nous vous répondrons dans les meilleurs délais.
+                    </p>
+
+                    {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+                        <div class="mb-3">
+                            {{ form_label(form.name) }}
+                            {{ form_widget(form.name) }}
+                            {{ form_errors(form.name) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.email) }}
+                            {{ form_widget(form.email) }}
+                            {{ form_errors(form.email) }}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form_label(form.message) }}
+                            {{ form_widget(form.message) }}
+                            {{ form_errors(form.message) }}
+                        </div>
+
+                        <button type="submit" class="btn-cyber w-100 py-2">
+                            <i class="bi bi-send me-2"></i>Envoyer le message
+                        </button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="bg-light rounded-4 p-4 text-center">
+                <h5>📞 Autres moyens de nous contacter</h5>
+                <p class="mb-0">
+                    <i class="bi bi-envelope me-2"></i> contact@cyberformation.ma<br>
+                    <i class="bi bi-phone me-2"></i> +212 676-475-435<br>
+                    <i class="bi bi-geo-alt me-2"></i> Casablanca, Maroc
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
