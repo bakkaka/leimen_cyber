@@ -11,25 +11,40 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SitemapController extends AbstractController
 {
-    #[Route('/sitemap.xml', name: 'app_sitemap')]
-    public function index(EntityManagerInterface $em): Response
+    #[Route('/sitemap.xml', name: 'app_sitemap_xml')]
+    public function xml(EntityManagerInterface $em): Response
     {
         $urls = [];
 
         // Page d'accueil
-        $urls[] = $this->generateUrl('app_home', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $urls[] = [
+            'loc' => $this->generateUrl('app_home', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'priority' => '1.0',
+            'changefreq' => 'daily',
+        ];
 
         // Liste des formations
-        $urls[] = $this->generateUrl('app_course_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $urls[] = [
+            'loc' => $this->generateUrl('app_course_index', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'priority' => '0.9',
+            'changefreq' => 'daily',
+        ];
 
-        // Connexion / Inscription (optionnel)
-        $urls[] = $this->generateUrl('app_login', [], UrlGeneratorInterface::ABSOLUTE_URL);
-        $urls[] = $this->generateUrl('app_register', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        // Contact
+        $urls[] = [
+            'loc' => $this->generateUrl('app_contact', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'priority' => '0.6',
+            'changefreq' => 'monthly',
+        ];
 
         // Formations publiées
         $courses = $em->getRepository(Course::class)->findBy(['isPublished' => true]);
         foreach ($courses as $course) {
-            $urls[] = $this->generateUrl('app_course_show', ['slug' => $course->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
+            $urls[] = [
+                'loc' => $this->generateUrl('app_course_show', ['slug' => $course->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL),
+                'priority' => '0.8',
+                'changefreq' => 'weekly',
+            ];
         }
 
         // Génération du XML
@@ -38,12 +53,24 @@ class SitemapController extends AbstractController
 
         foreach ($urls as $url) {
             $xml .= '<url>';
-            $xml .= '<loc>' . htmlspecialchars($url) . '</loc>';
+            $xml .= '<loc>' . htmlspecialchars($url['loc']) . '</loc>';
+            $xml .= '<priority>' . $url['priority'] . '</priority>';
+            $xml .= '<changefreq>' . $url['changefreq'] . '</changefreq>';
             $xml .= '</url>';
         }
 
         $xml .= '</urlset>';
 
         return new Response($xml, 200, ['Content-Type' => 'application/xml']);
+    }
+
+    #[Route('/plan-du-site', name: 'app_sitemap')]
+    public function index(EntityManagerInterface $em): Response
+    {
+        $courses = $em->getRepository(Course::class)->findBy(['isPublished' => true]);
+
+        return $this->render('sitemap/index.html.twig', [
+            'courses' => $courses,
+        ]);
     }
 }

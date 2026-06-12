@@ -6,25 +6,24 @@ use App\Entity\Course;
 use App\Entity\Enrollment;
 use App\Service\StripeService;
 use App\Service\PayPalService;
+use App\Service\BrevoApiMailerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class PaymentController extends AbstractController
 {
-    // ========== INSCRIPTION GRATUITE (test) ==========
+    // ========== INSCRIPTION GRATUITE ==========
     #[Route('/checkout/{id}', name: 'app_checkout')]
     #[IsGranted('ROLE_USER')]
     public function checkout(
         Course $course,
         EntityManagerInterface $em,
-        MailerInterface $mailer
+        BrevoApiMailerService $brevoApiMailerService
     ): Response {
         $user = $this->getUser();
 
@@ -48,20 +47,23 @@ class PaymentController extends AbstractController
         $em->persist($enrollment);
         $em->flush();
 
-        $email = (new TemplatedEmail())
-            ->from('admin@cybersec.local')
-            ->to($user->getEmail())
-            ->subject('Inscription à une formation')
-            ->htmlTemplate('emails/course_enrollment.html.twig')
-            ->context(['user' => $user, 'course' => $course]);
+        // ✅ Email d'inscription gratuite
+        $htmlContent = $this->renderView('emails/course_enrollment.html.twig', [
+            'user' => $user,
+            'course' => $course
+        ]);
 
-        $mailer->send($email);
+        $brevoApiMailerService->sendEmail(
+            $user->getEmail(),
+            'Inscription à une formation',
+            $htmlContent
+        );
 
         $this->addFlash('success', 'Inscription réussie.');
         return $this->redirectToRoute('app_course_learn', ['slug' => $course->getSlug()]);
     }
 
-    // ========== PAIEMENT STRIPE ==========
+    // ========== STRIPE ==========
     #[Route('/stripe/checkout/{id}', name: 'app_stripe_checkout')]
     #[IsGranted('ROLE_USER')]
     public function stripeCheckout(Course $course, StripeService $stripeService, EntityManagerInterface $em): Response
@@ -95,8 +97,11 @@ class PaymentController extends AbstractController
     }
 
     #[Route('/stripe/success/{id}', name: 'app_stripe_success')]
-    public function stripeSuccess(Course $course, EntityManagerInterface $em): Response
-    {
+    public function stripeSuccess(
+        Course $course,
+        EntityManagerInterface $em,
+        BrevoApiMailerService $brevoApiMailerService
+    ): Response {
         $user = $this->getUser();
 
         $existing = $em->getRepository(Enrollment::class)->findOneBy([
@@ -113,9 +118,27 @@ class PaymentController extends AbstractController
             $enrollment->setPaymentMethod('stripe');
             $em->persist($enrollment);
             $em->flush();
+
+            try {
+                $htmlContent = $this->renderView('emails/course_enrollment.html.twig', [
+                    'user' => $user,
+                    'course' => $course
+                ]);
+
+                $brevoApiMailerService->sendEmail(
+                    $user->getEmail(),
+                    '✅ Confirmation de paiement - Formation validée',
+                    $htmlContent
+                );
+
+                $this->addFlash('success', '✅ Paiement réussi et email envoyé !');
+            } catch (\Exception $e) {
+                $this->addFlash('danger', '⚠️ Paiement réussi mais ERREUR EMAIL : ' . $e->getMessage());
+            }
+        } else {
+            $this->addFlash('info', '⚠️ Déjà inscrit, aucun email envoyé.');
         }
 
-        $this->addFlash('success', '✅ Paiement réussi !');
         return $this->redirectToRoute('app_course_learn', ['slug' => $course->getSlug()]);
     }
 
@@ -126,20 +149,17 @@ class PaymentController extends AbstractController
         return $this->redirectToRoute('app_course_index');
     }
 
-    // ========== PAIEMENT PAYPAL ==========
+    // ========== PAYPAL ==========
     #[Route('/paypal/checkout/{id}', name: 'app_paypal_checkout')]
     #[IsGranted('ROLE_USER')]
     public function paypalCheckout(Course $course, PayPalService $payPalService): Response
     {
-        $user = $this->getUser();
-
-        $amount = $course->getPrice() / 100; // prix en MAD (ex: 49.00)
+        $amount = $course->getPrice() / 100;
         $successUrl = $this->generateUrl('app_paypal_success', ['id' => $course->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
         $cancelUrl = $this->generateUrl('app_paypal_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $order = $payPalService->createOrder($amount, 'USD', $successUrl, $cancelUrl);
 
-        // ✅ Correction : $order est maintenant un tableau, plus un objet
         foreach ($order['links'] as $link) {
             if ($link['rel'] === 'approve') {
                 return $this->redirect($link['href']);
@@ -151,8 +171,12 @@ class PaymentController extends AbstractController
     }
 
     #[Route('/paypal/success/{id}', name: 'app_paypal_success')]
-    public function paypalSuccess(Course $course, Request $request, EntityManagerInterface $em): Response
-    {
+    public function paypalSuccess(
+        Course $course,
+        Request $request,
+        EntityManagerInterface $em,
+        BrevoApiMailerService $brevoApiMailerService
+    ): Response {
         $user = $this->getUser();
         $token = $request->query->get('token');
 
@@ -160,9 +184,6 @@ class PaymentController extends AbstractController
             $this->addFlash('error', 'Token PayPal manquant.');
             return $this->redirectToRoute('app_course_show', ['slug' => $course->getSlug()]);
         }
-
-        // Ici, il faudrait capturer la commande via PayPalService
-        // Pour simplifier, on créé l'inscription directement (à sécuriser avec vérification réelle)
 
         $existing = $em->getRepository(Enrollment::class)->findOneBy([
             'student' => $user,
@@ -178,6 +199,17 @@ class PaymentController extends AbstractController
             $enrollment->setPaymentMethod('paypal');
             $em->persist($enrollment);
             $em->flush();
+
+            $htmlContent = $this->renderView('emails/course_enrollment.html.twig', [
+                'user' => $user,
+                'course' => $course
+            ]);
+
+            $brevoApiMailerService->sendEmail(
+                $user->getEmail(),
+                '✅ Confirmation de paiement PayPal - Formation validée',
+                $htmlContent
+            );
         }
 
         $this->addFlash('success', '✅ Paiement PayPal réussi !');
@@ -191,11 +223,14 @@ class PaymentController extends AbstractController
         return $this->redirectToRoute('app_course_index');
     }
 
-    // ========== PAIEMENT PAR VIREMENT BANCAIRE ==========
+    // ========== VIREMENT BANCAIRE ==========
     #[Route('/bank-transfer/{id}', name: 'app_bank_transfer')]
     #[IsGranted('ROLE_USER')]
-    public function bankTransfer(Course $course, EntityManagerInterface $em, MailerInterface $mailer): Response
-    {
+    public function bankTransfer(
+        Course $course,
+        EntityManagerInterface $em,
+        BrevoApiMailerService $brevoApiMailerService
+    ): Response {
         $user = $this->getUser();
 
         $existing = $em->getRepository(Enrollment::class)->findOneBy([
@@ -218,25 +253,28 @@ class PaymentController extends AbstractController
         $em->persist($enrollment);
         $em->flush();
 
-        $adminEmail = (new TemplatedEmail())
-            ->from('admin@cybersec.local')
-            ->to('abdoubakka@gmail.com')
-            ->subject('Nouvelle demande d’inscription par virement')
-            ->htmlTemplate('emails/bank_transfer_request.html.twig')
-            ->context(['user' => $user, 'course' => $course, 'enrollment' => $enrollment]);
-        $mailer->send($adminEmail);
+        // Admin
+        $adminHtml = $this->renderView('emails/course_enrollment.html.twig', [
+            'user' => $user,
+            'course' => $course
+        ]);
+        $brevoApiMailerService->sendEmail(
+            'admin@cyberleimen.com',
+            'Nouvelle demande d’inscription par virement',
+            $adminHtml
+        );
 
-        $userEmail = (new TemplatedEmail())
-            ->from('admin@cybersec.local')
-            ->to($user->getEmail())
-            ->subject('Instructions de paiement par virement')
-            ->htmlTemplate('emails/bank_transfer_instructions.html.twig')
-            ->context([
-                'user' => $user,
-                'course' => $course,
-                'bankAccounts' => $this->getBankAccounts()
-            ]);
-        $mailer->send($userEmail);
+        // Utilisateur
+        $userHtml = $this->renderView('emails/bank_transfer_instructions.html.twig', [
+            'user' => $user,
+            'course' => $course,
+            'bankAccounts' => $this->getBankAccounts()
+        ]);
+        $brevoApiMailerService->sendEmail(
+            $user->getEmail(),
+            'Instructions de paiement par virement',
+            $userHtml
+        );
 
         $this->addFlash('success', 'Votre demande a été enregistrée. Vous allez recevoir un email avec les coordonnées bancaires.');
         return $this->redirectToRoute('app_course_show', ['slug' => $course->getSlug()]);

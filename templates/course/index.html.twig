@@ -4,7 +4,7 @@
 {% block description %}Découvrez nos formations en cybersécurité au Maroc. Débutant, intermédiaire ou avancé. Certificat officiel offert.{% endblock %}
 {% block og_title %}Formations Cybersécurité - Cyber Formation Maroc{% endblock %}
 {% block og_description %}Formez-vous à la cybersécurité. Cours pratiques, vidéos HD, certificat officiel. Inscription en ligne.{% endblock %}
-{% block og_image %}{{ absolute_url(asset('assets/images/cyber-og.jpg')) }}{% endblock %}
+{% block og_image %}{{ absolute_url(asset('images/cyber-og.png')) }}{% endblock %}
 
 {% block body %}
 <div class="hero-section">
@@ -15,6 +15,30 @@
         <div class="hero-buttons">
             <a href="#formations" class="btn-cyber btn-lg">📚 Voir les formations</a>
             <a href="#extraits" class="btn-cyber-outline btn-lg">▶️ Extraits gratuits</a>
+        </div>
+    </div>
+</div>
+
+{# ========================================== #}
+{# VIDÉO DE PRÉSENTATION #}
+{# ========================================== #}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="ratio ratio-16x9 shadow rounded-4 overflow-hidden">
+                <iframe 
+                    src="https://www.youtube.com/embed/TA_VIDEO_ID" 
+                    title="Présentation complète de la formation" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+            <div class="text-center mt-4">
+                <a href="#formations" class="btn btn-outline-primary btn-lg btn-bounce">
+                    👇 Découvrez les formations 👇
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -57,9 +81,7 @@
                                 <span><i class="bi bi-clock"></i> {{ course.duration }} min</span>
                                 <span><i class="bi bi-play-circle"></i> {{ course.modules|length }} modules</span>
                             </div>
-                            <div class="course-price">
-                                {{ (course.price / 100)|number_format(0, ',', ' ') }} MAD
-                            </div>
+                            {# PRIX SUPPRIMÉ – on discute du prix sur WhatsApp #}
                             <a href="{{ path('app_course_show', {'slug': course.slug}) }}" class="btn-cyber w-100">
                                 📖 Voir les détails
                             </a>
@@ -100,4 +122,14 @@
         </div>
     </div>
 </div>
+
+<style>
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+.btn-bounce {
+    animation: bounce 1.2s infinite ease-in-out;
+}
+</style>
 {% endblock %}

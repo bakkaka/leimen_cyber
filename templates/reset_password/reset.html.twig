@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau mot de passe{% endblock %}
+
+{% block body %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">🔐 Nouveau mot de passe</h4>
+                </div>
+
+```
+            <div class="card-body">
+
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                <form method="POST" action="{{ path('app_reset_password_submit', {'token': token}) }}">
+
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('reset_password') }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Nouveau mot de passe
+                        </label>
+
+                        <input
+                            type="password"
+                            name="password"
+                            class="form-control"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Confirmer le mot de passe
+                        </label>
+
+                        <input
+                            type="password"
+                            name="confirm_password"
+                            class="form-control"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Réinitialiser le mot de passe
+                    </button>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+</div>
+{% endblock %}

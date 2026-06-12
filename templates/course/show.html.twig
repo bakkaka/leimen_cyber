@@ -5,11 +5,18 @@
 {% block og_title %}{{ course.title }} - Cyber Formation Maroc{% endblock %}
 {% block og_description %}{{ course.shortDescription|default(course.description|striptags|slice(0, 160)) }}{% endblock %}
 {% block og_url %}{{ app.request.uri }}{% endblock %}
+{% block og_image %}{% if course.imageUrl %}{{ absolute_url(course.imageUrl) }}{% else %}{{ absolute_url(asset('images/cyber-og.png')) }}{% endif %}{% endblock %}
 
 {% block body %}
 <div class="hero-section">
     <div class="container">
         <h1 class="hero-title text-center">{{ course.title }}</h1>
+        
+        {% if course.imageUrl %}
+        <div class="text-center my-4">
+            <img src="{{ course.imageUrl }}" alt="{{ course.title }}" class="img-fluid rounded-4 shadow" style="max-height: 400px; object-fit: cover;">
+        </div>
+        {% endif %}
         
         <div class="row align-items-center mt-5">
             <div class="col-lg-8">
@@ -23,61 +30,86 @@
             <div class="col-lg-4">
                 <div class="card shadow-lg border-0 rounded-4">
                     <div class="card-body p-4 text-center">
-                        <h2 class="text-primary mb-3">{{ (course.price / 100)|number_format(0, ',', ' ') }} MAD</h2>
                         
-                        {% set isEnrolled = false %}
-                        {% set userProgress = 0 %}
+                        {# ========================================== #}
+                        {# ⭐ VÉRIFICATION DE L'ACCÈS #}
+                        {# ========================================== #}
+                        
+                        {% set hasValidAccess = false %}
                         {% set enrollmentId = null %}
-                        {% set paymentMethod = null %}
+                        
                         {% if app.user %}
                             {% for enrollment in app.user.enrollments %}
                                 {% if enrollment.course.id == course.id %}
-                                    {% set isEnrolled = true %}
-                                    {% set userProgress = enrollment.progress %}
-                                    {% set enrollmentId = enrollment.id %}
-                                    {% set paymentMethod = enrollment.paymentMethod %}
+                                    {% if enrollment.paymentMethod == 'bank_transfer_validated' %}
+                                        {% set hasValidAccess = true %}
+                                        {% set enrollmentId = enrollment.id %}
+                                    {% endif %}
                                 {% endif %}
                             {% endfor %}
                         {% endif %}
                         
+                        {# ========================================== #}
+                        {# AFFICHAGE SELON LE STATUT #}
+                        {# ========================================== #}
+                        
                         {% if not app.user %}
-                            <a href="{{ path('app_login') }}" class="btn-cyber w-100 py-2">
-                                <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter pour vous inscrire
+                            {# Non connecté #}
+                            <a href="https://wa.me/212643259637?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20la%20formation%20{{ course.title|url_encode }}"
+                               class="btn btn-success w-100 py-2" style="background-color: #25D366; border: none; border-radius: 50px; font-weight: bold; color: white;">
+                                <i class="bi bi-whatsapp me-2"></i>💬 Me contacter sur WhatsApp
                             </a>
-                            <small class="text-muted d-block mt-2">Déjà un compte ? Connectez-vous</small>
-                        {% elseif isEnrolled and paymentMethod == 'pending_bank' %}
-                            <div class="alert alert-warning text-center">
-                                ⏳ Votre inscription est en attente de validation après réception du virement.
-                            </div>
-                            <p class="text-muted">Vous recevrez un email de confirmation sous 48h.</p>
-                        {% elseif isEnrolled %}
-                            {% if userProgress >= 100 %}
+                            <small class="text-muted d-block mt-2">📱 Réponse rapide · Prix adapté</small>
+                            
+                        {% elseif hasValidAccess %}
+                            {# ✅ ACCÈS VALIDÉ PAR L'ADMIN → BOUTON VERT #}
+                            
+                            {# Calcul de la progression - Utilisation de lessonProgresses #}
+                            {% set completedLessonsCount = 0 %}
+                            {% set totalLessons = 0 %}
+                            
+                            {% for module in course.modules %}
+                                {% set totalLessons = totalLessons + module.lessons|length %}
+                                {% for lesson in module.lessons %}
+                                    {% for progress in app.user.lessonProgresses %}
+                                        {% if progress.lesson.id == lesson.id and progress.completed %}
+                                            {% set completedLessonsCount = completedLessonsCount + 1 %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                            {% endfor %}
+                            
+                            {% set progressPercent = totalLessons > 0 ? (completedLessonsCount / totalLessons * 100)|round : 0 %}
+                            
+                            {% if progressPercent >= 100 %}
                                 <div class="alert alert-success">
                                     🎉 Félicitations ! Vous avez terminé cette formation.
                                 </div>
-                                <a href="{{ path('app_certificate_download', {id: enrollmentId}) }}" class="btn-cyber w-100 py-2">
-                                    🏆 Télécharger mon certificat
-                                </a>
+                                <a href="{{ path('generate_certificate') }}?enrollment_id={{ enrollmentId }}" class="btn btn-success w-100 py-2" style="background-color: #28a745; border: none; border-radius: 50px; font-weight: bold;">
+    🏆 Télécharger mon certificat
+</a>
                             {% else %}
-                                <a href="{{ path('app_course_learn', {slug: course.slug}) }}" class="btn-cyber w-100 py-2">
-                                    <i class="bi bi-play-circle me-2"></i>Continuer la formation
+                                <a href="{{ path('app_course_learn', {slug: course.slug}) }}" class="btn btn-success w-100 py-2" style="background-color: #28a745; border: none; border-radius: 50px; font-weight: bold; font-size: 1.1rem;">
+                                    🚀 Accéder au cours
                                 </a>
-                                <div class="progress-cyber mt-2">
-                                    <div class="progress-cyber-bar" style="width: {{ userProgress }}%"></div>
+                                <div class="progress mt-2">
+                                    <div class="progress-bar bg-success" style="width: {{ progressPercent }}%"></div>
                                 </div>
-                                <small class="text-muted">{{ userProgress }}% complété</small>
+                                <small class="text-muted">{{ progressPercent }}% complété</small>
                             {% endif %}
+                            
                         {% else %}
-                            <div class="d-flex flex-column gap-2">
-                                <a href="{{ path('app_stripe_checkout', {id: course.id}) }}" class="btn-cyber w-100 py-2">
-                                    <i class="bi bi-credit-card me-2"></i>S'inscrire - {{ (course.price / 100)|number_format(0, ',', ' ') }} MAD
-                                </a>
-                                <a href="{{ path('app_paypal_checkout', {id: course.id}) }}" class="btn-cyber-outline w-100 py-2">
-                                    <i class="bi bi-paypal me-2"></i>Payer avec PayPal
-                                </a>
+                            {# ❌ PAS D'ACCÈS ENCORE → WhatsApp pour demander #}
+                            <div class="alert alert-info">
+                                💡 Vous n'avez pas encore accès à cette formation.
                             </div>
-                            <small class="text-muted d-block mt-2">Paiement sécurisé</small>
+                            <a href="https://wa.me/212643259637?text=Bonjour%2C%20je%20suis%20connect%C3%A9%20(email%20:{{ app.user.email|url_encode }})%20et%20je%20souhaite%20obtenir%20l%27acc%C3%A8s%20%C3%A0%20{{ course.title|url_encode }}"
+                               class="btn btn-success w-100 py-2" style="background-color: #25D366; border: none; border-radius: 50px; font-weight: bold; color: white;">
+                                <i class="bi bi-whatsapp me-2"></i>💰 Demander l'accès (WhatsApp)
+                            </a>
+                            <small class="text-muted d-block mt-2">Contactez l'administrateur pour obtenir l'accès.</small>
                         {% endif %}
+                        
                     </div>
                 </div>
             </div>

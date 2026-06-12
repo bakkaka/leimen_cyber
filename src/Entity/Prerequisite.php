@@ -55,12 +55,11 @@ class Prerequisite
     #[ORM\Column(type: 'boolean')]
     private bool $isPublished = true;
 
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'entityId')]
-    private Collection $comments;
+   
 
     public function __construct()
     {
-        $this->comments = new ArrayCollection();
+        
         $this->createdAt = new \DateTimeImmutable();
         $this->isPublished = false;
     }
@@ -94,5 +93,5 @@ class Prerequisite
     public function getUpdatedAt(): ?\DateTimeImmutable { return $this->updatedAt; }
     public function isPublished(): bool { return $this->isPublished; }
     public function setIsPublished(bool $isPublished): static { $this->isPublished = $isPublished; return $this; }
-    public function getComments(): Collection { return $this->comments; }
+    
 }

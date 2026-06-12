@@ -12,6 +12,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich; 
+
 
 #[ORM\Entity]
 #[ORM\Table(name: 'course')]
@@ -68,6 +71,9 @@ class Course
     #[Groups(['course:read'])]
     private ?string $imageUrl = null;
 
+    #[ORM\OneToMany(mappedBy: 'course', targetEntity: Image::class, cascade: ['persist', 'remove'])]
+    private Collection $images;
+
     #[ORM\Column]
     #[Assert\Positive]
     #[Groups(['course:read'])]
@@ -97,6 +103,7 @@ class Course
         $this->modules = new ArrayCollection();
         $this->enrollments = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
+        $this->images = new ArrayCollection();
     }
 
     // Getters et Setters
@@ -289,4 +296,30 @@ public function setHasCertificate(bool $hasCertificate): static { $this->hasCert
             $this->slug = $slugger->slug($this->title)->lower();
         }
     }
+
+    public function getImages(): Collection
+{
+    return $this->images;
+}
+
+public function addImage(Image $image): static
+{
+    if (!$this->images->contains($image)) {
+        $this->images->add($image);
+        $image->setCourse($this);
+    }
+
+    return $this;
+}
+
+public function removeImage(Image $image): static
+{
+    if ($this->images->removeElement($image)) {
+        if ($image->getCourse() === $this) {
+            $image->setCourse(null);
+        }
+    }
+
+    return $this;
+}
 }

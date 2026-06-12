@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+{% block description %}Formation cybersécurité au Maroc. Cours pratiques en hacking éthique, protection des données et sécurité réseau. Certificat officiel offert.{% endblock %}
+{% block title %}Cyber Formation Maroc - Maîtrisez la Cybersécurité{% endblock %}
+{% block og_description %}Formez-vous à la cybersécurité avec nos cours pratiques. Certificat officiel offert.{% endblock %}
+
+
+{% block body %}
+<div class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">Formez-vous à la cybersécurité</h1>
+        <p class="hero-subtitle">Cours pratiques, certifications officielles, accès à vie.</p>
+        <div class="hero-buttons">
+            <a href="{{ path('app_course_index') }}" class="btn-cyber btn-lg me-3">
+                📚 Voir nos formations
+            </a>
+            <a href="#" class="btn-cyber-outline btn-lg">
+                🎬 Extraits gratuits
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <h2 class="text-center mb-5">Nos formations les plus récentes</h2>
+    <div class="row g-4">
+        {% for course in courses %}
+            <div class="col-md-6 col-lg-4">
+                <div class="course-card">
+                    <div class="course-image">
+                        {% i
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    Aucune formation disponible pour le moment.
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

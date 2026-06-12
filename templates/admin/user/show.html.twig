@@ -5,8 +5,11 @@
 {% block body %}
 <div class="container mt-4">
     <div class="card shadow-sm rounded-4 mb-4">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h2 class="mb-0">{{ user.email }}</h2>
+            <div>
+                <a href="{{ path('app_admin_users') }}" class="btn btn-light btn-sm">← Retour à la liste</a>
+            </div>
         </div>
         <div class="card-body">
             <p><strong>Nom :</strong> {{ user.fullName|default('Non renseigné') }}</p>
@@ -26,52 +29,76 @@
         </div>
     </div>
 
-    <h3>📚 Inscriptions</h3>
-    {% if enrollments|length > 0 %}
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
+    <div class="mb-3">
+        <h3>📚 Formations et accès</h3>
+        <p class="text-muted">Cliquez sur <strong>🔓 Donner l'accès</strong> pour autoriser l'utilisateur à suivre une formation. Le bouton se transforme automatiquement en <strong>🔒 Retirer l'accès</strong> une fois validé.</p>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Cours</th>
+                    <th>Statut</th>
+                    <th>Progression</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {# Affichage des cours déjà inscrits #}
+                {% for enrollment in enrollments %}
                     <tr>
-                        <th>Cours</th>
-                        <th>Inscrit le</th>
-                        <th>Méthode</th>
-                        <th>Progression</th>
-                        <th>Statut</th>
-                        <th>Action</th>
+                        <td>{{ enrollment.course.title }}</td>
+                        <td>
+                            {% if enrollment.paymentMethod == 'bank_transfer_validated' %}
+                                <span class="badge bg-success">✅ Accès autorisé</span>
+                            {% else %}
+                                <span class="badge bg-warning">⏳ En attente</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ enrollment.progress }}%{% if enrollment.progress >= 100 %} 🎓{% endif %}</td>
+                        <td>
+                            {% if enrollment.paymentMethod == 'bank_transfer_validated' %}
+                                <form method="post" action="{{ path('app_admin_enrollment_remove_access', {userId: user.id, courseId: enrollment.course.id}) }}" style="display:inline-block">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('remove-single-' ~ user.id ~ '-' ~ enrollment.course.id) }}">
+                                    <button class="btn btn-sm btn-danger" onclick="return confirm('🔒 Retirer l\'accès pour {{ enrollment.course.title }} ?')">
+                                        🔒 Retirer l'accès
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form method="post" action="{{ path('app_admin_enrollment_give_access', {userId: user.id, courseId: enrollment.course.id}) }}" style="display:inline-block">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('give-single-' ~ user.id ~ '-' ~ enrollment.course.id) }}">
+                                    <button class="btn btn-sm btn-success" onclick="return confirm('✅ Donner l\'accès pour {{ enrollment.course.title }} ?')">
+                                        🔓 Donner l'accès
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    {% for enrollment in enrollments %}
+                {% endfor %}
+                
+                {# Affichage des cours auxquels l'utilisateur n'est PAS encore inscrit #}
+                {% set enrolledCourseIds = enrollments|map(e => e.course.id) %}
+                {% for course in courses %}
+                    {% if course.id not in enrolledCourseIds %}
                         <tr>
-                            <td>{{ enrollment.course.title }}</td>
-                            <td>{{ enrollment.enrolledAt|date('d/m/Y') }}</td>
+                            <td>{{ course.title }}</td>
+                            <td><span class="badge bg-secondary">❌ Non inscrit</span></td>
+                            <td>0%</td>
                             <td>
-                                {% if enrollment.paymentMethod == 'pending_bank' %}
-                                    <span class="badge bg-warning">Virement (en attente)</span>
-                                {% elseif enrollment.paymentMethod == 'stripe' %}
-                                    <span class="badge bg-success">Stripe</span>
-                                {% else %}
-                                    <span class="badge bg-secondary">{{ enrollment.paymentMethod }}</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ enrollment.progress }}%{% if enrollment.progress >= 100 %} ✅{% endif %}</td>
-                            <td>{{ enrollment.isCompleted ? 'Terminé' : 'En cours' }}</td>
-                            <td>
-                                {% if enrollment.paymentMethod == 'pending_bank' %}
-                                    <form method="post" action="{{ path('app_admin_enrollment_validate', {id: enrollment.id}) }}" style="display:inline-block">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('validate' ~ enrollment.id) }}">
-                                        <button class="btn btn-sm btn-success">✅ Valider le paiement</button>
-                                    </form>
-                                {% endif %}
+                                <form method="post" action="{{ path('app_admin_enrollment_give_access', {userId: user.id, courseId: course.id}) }}" style="display:inline-block">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('give-single-' ~ user.id ~ '-' ~ course.id) }}">
+                                    <button class="btn btn-sm btn-success" onclick="return confirm('✅ Créer une inscription et donner l\'accès pour {{ course.title }} ?')">
+                                        🔓 Créer + Donner accès
+                                    </button>
+                                </form>
                             </td>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <p>Aucune inscription.</p>
-    {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     <h3>📊 Progression par module</h3>
     {% if moduleProgress|length > 0 %}

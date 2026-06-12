@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page non trouvée (404) - CyberLeimen | Formation Cybersécurité Maroc{% endblock %}
+
+{% block meta_description %}
+    <meta name="description" content="La page que vous recherchez n'existe pas sur CyberLeimen. Retrouvez nos formations en cybersécurité au Maroc.">
+{% endblock %}
+
+{% block meta_robots %}
+    <meta name="robots" content="noindex, follow">
+{% endblock %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ url('app_home') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5 pt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="error-page" itemscope itemtype="https://schema.org/WebPage">
+                <div class="error-code mb-4">
+                    <span class="display-1 fw-bold text-warning">404</span>
+                </div>
+                <div class="error-icon mb-4">
+                    <i class="bi bi-compass display-1 text-muted"></i>
+                </div>
+                <h1 class="mb-3">Page non trouvée</h1>
+                <p class="lead mb-4">
+                    La page que vous recherchez n'existe pas ou a été déplacée.
+                </p>
+                
+                {# ✅ Formulaire de recherche pour garder l'utilisateur #}
+                <div class="search-box mt-4 mb-4">
+                    <form action="{{ path('app_course_index') }}" method="get" class="d-flex justify-content-center">
+                        <input type="search" 
+                               name="search" 
+                               class="form-control w-50 me-2" 
+                               placeholder="Rechercher une formation..."
+                               aria-label="Rechercher">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Rechercher
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    Vérifiez l'URL ou retournez à l'accueil.
+                </div>
+                
+                {# ✅ Liens internes pour le SEO #}
+                <div class="popular-links mt-4">
+                    <h5>Nos formations populaires :</h5>
+                    <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+                        <a href="{{ path('app_course_index') }}" class="btn btn-sm btn-outline-primary">
+                            Toutes les formations
+                        </a>
+                        <a href="{{ path('app_course_show', {'slug': 'cybersecurite-essentiel'}) }}" class="btn btn-sm btn-outline-secondary">
+                            Cybersécurité Essentiel
+                        </a>
+                        <a href="{{ path('app_course_show', {'slug': 'ethical-hacking'}) }}" class="btn btn-sm btn-outline-secondary">
+                            Ethical Hacking
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <a href="{{ path('app_home') }}" class="btn btn-primary">
+                        <i class="bi bi-house"></i> Retour à l'accueil
+                    </a>
+                    <a href="{{ path('app_contact') }}" class="btn btn-outline-secondary ms-2">
+                        <i class="bi bi-envelope"></i> Nous contacter
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-page {
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+.error-code span {
+    font-size: 120px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffc107, #ff9800);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.search-box input {
+    border-radius: 50px;
+}
+.search-box button {
+    border-radius: 50px;
+}
+</style>
+{% endblock %}

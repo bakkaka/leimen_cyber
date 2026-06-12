@@ -35,11 +35,11 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    App\Service\BrevoEmailService:
-        arguments:
-            $brevoApiKey: '%brevo.api_key%'
-            $brevoFromEmail: '%brevo.from_email%'
-            $brevoFromName: '%brevo.from_name%'
+    #App\Service\BrevoEmailService:
+        #arguments:
+            #$brevoApiKey: '%brevo.api_key%'
+            #$brevoFromEmail: '%brevo.from_email%'
+            #$brevoFromName: '%brevo.from_name%'
 
     App\Service\StripeService:
         arguments:
@@ -59,3 +59,15 @@ services:
             $attijariName: '%attijari.name%'
             $cihRib: '%cih.rib%'
             $bpRib: '%bp.rib%'
+    
+    App\Service\BrevoApiMailerService:
+        arguments:
+            $brevoApiKey: '%env(BREVO_API_KEY)%'
+
+    App\Service\MailService:
+        autowire: true
+    App\Service\CloudinaryService:
+        arguments:
+            $cloudName: '%env(CLOUDINARY_CLOUD_NAME)%'
+            $apiKey: '%env(CLOUDINARY_API_KEY)%'
+            $apiSecret: '%env(CLOUDINARY_API_SECRET)%'

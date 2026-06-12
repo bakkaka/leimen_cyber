@@ -32,17 +32,21 @@ class CourseController extends AbstractController
     #[Route('/formations/{slug}', name: 'app_course_show')]
     public function show(string $slug, EntityManagerInterface $em): Response
     {
+        // ✅ GESTION 404 : Cours inexistant ou non publié
         $course = $em->getRepository(Course::class)->findOneBy([
             'slug' => $slug,
             'isPublished' => true
         ]);
 
         if (!$course) {
-            throw $this->createNotFoundException('Formation non trouvée');
+            throw $this->createNotFoundException('La formation demandée n\'existe pas ou n\'est pas encore disponible.');
         }
 
         $isEnrolled = false;
+        $isAccessGranted = false;
         $enrollment = null;
+        $userProgress = 0;
+        $enrollmentId = null;
 
         if ($this->getUser()) {
             $enrollment = $em->getRepository(Enrollment::class)->findOneBy([
@@ -50,12 +54,22 @@ class CourseController extends AbstractController
                 'course' => $course
             ]);
             $isEnrolled = $enrollment !== null;
+            
+            // L'accès est autorisé si le paiement n'est pas en attente
+            if ($enrollment && $enrollment->getPaymentMethod() !== 'pending_bank') {
+                $isAccessGranted = true;
+                $userProgress = $enrollment->getProgress();
+                $enrollmentId = $enrollment->getId();
+            }
         }
 
         return $this->render('course/show.html.twig', [
             'course' => $course,
             'isEnrolled' => $isEnrolled,
-            'enrollment' => $enrollment
+            'isAccessGranted' => $isAccessGranted,
+            'enrollment' => $enrollment,
+            'userProgress' => $userProgress,
+            'enrollmentId' => $enrollmentId,
         ]);
     }
 
@@ -65,17 +79,25 @@ class CourseController extends AbstractController
     {
         $user = $this->getUser();
         
+        // ✅ GESTION 404 : Cours inexistant ou non publié
         $course = $em->getRepository(Course::class)->findOneBy(['slug' => $slug, 'isPublished' => true]);
         
         if (!$course) {
-            throw $this->createNotFoundException('Formation non trouvée');
+            throw $this->createNotFoundException('La formation demandée n\'existe pas.');
         }
+        
+        // ✅ GESTION 403 : Utilisateur non connecté (déjà géré par IsGranted)
         
         $enrollment = $em->getRepository(Enrollment::class)->findOneBy(['student' => $user, 'course' => $course]);
         
+        // ✅ GESTION 403 : Utilisateur non inscrit
         if (!$enrollment) {
-            $this->addFlash('warning', 'Vous devez vous inscrire.');
-            return $this->redirectToRoute('app_course_show', ['slug' => $slug]);
+            throw $this->createAccessDeniedException('Vous devez vous inscrire à cette formation pour y accéder.');
+        }
+        
+        // ✅ GESTION 403 : Paiement en attente
+        if ($enrollment->getPaymentMethod() === 'pending_bank') {
+            throw $this->createAccessDeniedException('Votre paiement est en attente de validation. Contactez-nous sur WhatsApp pour activer votre accès.');
         }
         
         // Si la formation est déjà terminée (100%), rediriger vers la page du cours
@@ -100,7 +122,7 @@ class CourseController extends AbstractController
             }
         }
         
-        // Toutes les leçons sont terminées (cas improbable car on a déjà testé 100% plus haut)
+        // Toutes les leçons sont terminées
         $this->addFlash('success', '🎉 Félicitations ! Vous avez terminé toutes les leçons de cette formation.');
         return $this->redirectToRoute('app_course_show', ['slug' => $slug]);
     }
@@ -111,23 +133,30 @@ class CourseController extends AbstractController
     {
         $user = $this->getUser();
         
+        // ✅ GESTION 404 : Cours inexistant
         $course = $em->getRepository(Course::class)->findOneBy(['slug' => $courseSlug, 'isPublished' => true]);
         
         if (!$course) {
-            throw $this->createNotFoundException('Formation non trouvée');
+            throw $this->createNotFoundException('La formation demandée n\'existe pas.');
         }
         
         $enrollment = $em->getRepository(Enrollment::class)->findOneBy(['student' => $user, 'course' => $course]);
         
+        // ✅ GESTION 403 : Utilisateur non inscrit
         if (!$enrollment) {
-            $this->addFlash('warning', 'Vous devez vous inscrire.');
-            return $this->redirectToRoute('app_course_show', ['slug' => $courseSlug]);
+            throw $this->createAccessDeniedException('Vous devez vous inscrire à cette formation pour accéder aux leçons.');
         }
         
+        // ✅ GESTION 403 : Paiement en attente
+        if ($enrollment->getPaymentMethod() === 'pending_bank') {
+            throw $this->createAccessDeniedException('Votre paiement est en attente de validation. Contactez-nous sur WhatsApp.');
+        }
+        
+        // ✅ GESTION 404 : Leçon inexistante ou n'appartenant pas au cours
         $lesson = $em->getRepository(Lesson::class)->find($lessonId);
         
         if (!$lesson || $lesson->getModule()->getCourse() !== $course) {
-            throw $this->createNotFoundException('Leçon non trouvée');
+            throw $this->createNotFoundException('La leçon demandée n\'existe pas ou n\'appartient pas à cette formation.');
         }
         
         // Récupérer ou créer la progression
@@ -236,12 +265,33 @@ class CourseController extends AbstractController
         $user = $this->getUser();
         $course = $lesson->getModule()->getCourse();
 
+        // ✅ GESTION 404 : Vérifier que la leçon existe (déjà fait par ParamConverter)
+        if (!$lesson) {
+            throw $this->createNotFoundException('La leçon demandée n\'existe pas.');
+        }
+
         if (!$this->isCsrfTokenValid('complete_' . $lesson->getId(), $request->request->get('_token'))) {
             $this->addFlash('error', 'Token invalide.');
             return $this->redirectToRoute('app_course_show', ['slug' => $course->getSlug()]);
         }
 
-        // 1. Récupérer ou créer la progression
+        // Vérifier que l'utilisateur a bien accès à cette leçon
+        $enrollment = $em->getRepository(Enrollment::class)->findOneBy([
+            'student' => $user,
+            'course' => $course
+        ]);
+
+        // ✅ GESTION 403 : Utilisateur non inscrit
+        if (!$enrollment) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas accès à cette leçon.');
+        }
+
+        // ✅ GESTION 403 : Paiement en attente
+        if ($enrollment->getPaymentMethod() === 'pending_bank') {
+            throw $this->createAccessDeniedException('Votre paiement est en attente de validation.');
+        }
+
+        // Récupérer ou créer la progression
         $progress = $em->getRepository(UserLessonProgress::class)->findOneBy([
             'student' => $user,
             'lesson' => $lesson
@@ -254,14 +304,14 @@ class CourseController extends AbstractController
             $em->persist($progress);
         }
 
-        // 2. Forcer la mise à jour
+        // Forcer la mise à jour
         $progress->setCompleted(true);
         $progress->setCompletedAt(new \DateTime());
         $em->flush();
 
         $this->addFlash('success', '✅ Leçon marquée comme terminée.');
 
-        // 4. Recalculer la progression totale
+        // Recalculer la progression totale
         $totalLessons = 0;
         $completedLessons = 0;
         foreach ($course->getModules() as $module) {
@@ -279,12 +329,7 @@ class CourseController extends AbstractController
 
         $progressPercent = $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
 
-        // 5. Mettre à jour l'enrollment
-        $enrollment = $em->getRepository(Enrollment::class)->findOneBy([
-            'student' => $user,
-            'course' => $course
-        ]);
-
+        // Mettre à jour l'enrollment
         if ($enrollment) {
             $enrollment->setProgress($progressPercent);
             if ($progressPercent >= 100) {
@@ -294,13 +339,13 @@ class CourseController extends AbstractController
             $this->addFlash('info', "Progression : {$progressPercent}%");
         }
 
-        // 6. Redirection personnalisée
+        // Redirection personnalisée
         $redirect = $request->request->get('_redirect');
         if ($redirect) {
             return $this->redirect($redirect);
         }
 
-        // 7. Redirection par défaut
+        // Redirection par défaut
         return $this->redirectToRoute('app_course_lesson', [
             'courseSlug' => $course->getSlug(),
             'lessonId' => $lesson->getId()

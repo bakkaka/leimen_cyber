@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Course;
 use App\Form\CourseType;
+use App\Service\CloudinaryService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,15 +28,28 @@ class CourseAdminController extends AbstractController
     }
     
     #[Route('/new', name: 'app_admin_course_new')]
-    public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
-    {
+    public function new(
+        Request $request,
+        EntityManagerInterface $em,
+        SluggerInterface $slugger,
+        CloudinaryService $cloudinaryService
+    ): Response {
         $course = new Course();
         $form = $this->createForm(CourseType::class, $course);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // Conversion des champs texte en JSON
-           // $this->convertTextareaToJson($form, $course);
+            // Upload de l'image vers Cloudinary
+            $imageFile = $form->get('imageFile')->getData();
+            if ($imageFile) {
+                $result = $cloudinaryService->upload($imageFile->getRealPath(), [
+                    'folder' => 'courses',
+                    'transformation' => ['width' => 1200, 'height' => 630, 'crop' => 'fill']
+                ]);
+                if ($result) {
+                    $course->setImageUrl($result['url']);
+                }
+            }
             
             $slug = $slugger->slug($course->getTitle())->lower();
             $course->setSlug($slug);
@@ -55,13 +69,34 @@ class CourseAdminController extends AbstractController
     }
     
     #[Route('/edit/{id}', name: 'app_admin_course_edit')]
-    public function edit(Course $course, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
-    {
+    public function edit(
+        Course $course,
+        Request $request,
+        EntityManagerInterface $em,
+        SluggerInterface $slugger,
+        CloudinaryService $cloudinaryService
+    ): Response {
         $form = $this->createForm(CourseType::class, $course);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-           // $this->convertTextareaToJson($form, $course);
+            // Upload de la nouvelle image (si fournie)
+            $imageFile = $form->get('imageFile')->getData();
+            if ($imageFile) {
+                // Optionnel : supprimer l'ancienne image sur Cloudinary
+                if ($course->getImageUrl()) {
+                    // Extraction du publicId depuis l'URL (à adapter selon ton besoin)
+                    // $cloudinaryService->delete($publicId);
+                }
+                
+                $result = $cloudinaryService->upload($imageFile->getRealPath(), [
+                    'folder' => 'courses',
+                    'transformation' => ['width' => 1200, 'height' => 630, 'crop' => 'fill']
+                ]);
+                if ($result) {
+                    $course->setImageUrl($result['url']);
+                }
+            }
             
             $slug = $slugger->slug($course->getTitle())->lower();
             $course->setSlug($slug);
@@ -88,23 +123,5 @@ class CourseAdminController extends AbstractController
         }
         
         return $this->redirectToRoute('app_admin_courses');
-    }
-    
-    private function convertTextareaToJson($form, Course $course): void
-    {
-        if ($form->has('whatYouWillLearn') && $form->get('whatYouWillLearn')->getData()) {
-            $lines = explode("\n", $form->get('whatYouWillLearn')->getData());
-            $course->setWhatYouWillLearn(array_filter(array_map('trim', $lines)));
-        }
-        
-        if ($form->has('requirements') && $form->get('requirements')->getData()) {
-            $lines = explode("\n", $form->get('requirements')->getData());
-            $course->setRequirements(array_filter(array_map('trim', $lines)));
-        }
-        
-        if ($form->has('targetAudience') && $form->get('targetAudience')->getData()) {
-            $lines = explode("\n", $form->get('targetAudience')->getData());
-            $course->setTargetAudience(array_filter(array_map('trim', $lines)));
-        }
     }
 }

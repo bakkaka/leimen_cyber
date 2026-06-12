@@ -1,96 +1,496 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Certificat de réussite</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f4f4f4;
-        }
-        .certificate {
-            width: 100%;
-            height: 100%;
-            background: white;
-            border: 20px solid #FF7F00;
-            padding: 40px;
-            text-align: center;
-            position: relative;
-        }
-        .logo {
-            position: absolute;
-            top: 40px;
-            left: 40px;
-            width: 100px;
-        }
-        h1 {
-            font-size: 48px;
-            color: #FF7F00;
-            margin-top: 50px;
-        }
-        .student-name {
-            font-size: 28px;
-            font-weight: bold;
-            margin: 30px 0;
-        }
-        .student-info {
-            font-size: 16px;
-            color: #555;
-            margin: 10px 0;
-        }
-        .course-title {
-            font-size: 24px;
-            color: #333;
-            margin: 20px 0;
-        }
-        .date {
-            margin-top: 50px;
-            font-size: 16px;
-        }
-        .certificate-number {
-            margin-top: 30px;
-            font-size: 12px;
-            color: #999;
-        }
-        .signature {
-            margin-top: 60px;
-            font-style: italic;
-        }
-        .footer {
-            margin-top: 40px;
-            font-size: 12px;
-            color: #777;
-        }
-    </style>
+
+<meta charset="UTF-8">
+
+<title>Certificat de Réussite - CyberLeimen</title>
+
+<style>
+
+@page {
+    size: A4 landscape;
+    margin: 10px;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family: Georgia, serif;
+    background:#ffffff;
+}
+
+.certificate{
+
+    position:relative;
+
+    width:100%;
+
+    height:800px;
+
+    background:#fcfaf4;
+
+    border:8px solid #c9a227;
+
+    overflow:hidden;
+}
+
+.outer-line{
+
+    position:absolute;
+
+    top:12px;
+    left:12px;
+    right:12px;
+    bottom:12px;
+
+    border:2px solid #c9a227;
+}
+
+.inner-line{
+
+    position:absolute;
+
+    top:20px;
+    left:20px;
+    right:20px;
+    bottom:20px;
+
+    border:1px solid #c9a227;
+}
+
+.content{
+    position:relative;
+    z-index:2;
+    padding:35px 45px;
+}
+
+/* ======================
+   HEADER
+====================== */
+
+.header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    border-bottom:1px solid #c9a227;
+
+    padding-bottom:10px;
+}
+
+.logo-zone{
+
+    width:150px;
+}
+
+.logo-image{
+
+    max-width:90px;
+
+    height:auto;
+}
+
+.header-center{
+
+    flex:1;
+
+    text-align:center;
+}
+
+.small-title{
+
+    font-size:10px;
+
+    color:#666;
+
+    letter-spacing:4px;
+}
+
+.main-title{
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    color:#c9a227;
+
+    margin-top:3px;
+}
+
+.header-right{
+
+    width:150px;
+}
+
+/* ======================
+   TITRE
+====================== */
+
+.title-section{
+
+    text-align:center;
+
+    margin-top:10px;
+}
+
+.certificate-title{
+
+    font-size:34px;
+
+    font-weight:900;
+
+    color:#111827;
+
+    letter-spacing:6px;
+}
+
+.certificate-subtitle{
+
+    font-size:12px;
+
+    color:#666;
+
+    letter-spacing:4px;
+}
+
+.gold-line{
+
+    width:120px;
+
+    height:2px;
+
+    background:#c9a227;
+
+    margin:8px auto;
+}
+
+/* ======================
+   CORPS
+====================== */
+
+.body-section{
+
+    text-align:center;
+
+    margin-top:10px;
+}
+
+.awarded{
+
+    font-size:15px;
+
+    color:#666;
+}
+
+.recipient-name{
+
+    margin-top:8px;
+
+    font-size:32px;
+
+    font-weight:900;
+
+    color:#0f172a;
+
+    text-transform:uppercase;
+}
+
+.name-line{
+
+    width:350px;
+
+    margin:8px auto;
+
+    border-top:1px solid #c9a227;
+}
+
+.course-label{
+
+    margin-top:10px;
+
+    font-size:13px;
+
+    color:#666;
+}
+
+.course-name{
+
+    margin-top:6px;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    color:#b8860b;
+}
+
+.message{
+
+    width:90%;
+
+    margin:10px auto;
+
+    font-size:11px;
+
+    line-height:1.4;
+
+    color:#444;
+}
+
+/* ======================
+   SCEAU
+====================== */
+
+.seal{
+
+    width:70px;
+
+    height:70px;
+
+    margin:8px auto;
+
+    border-radius:50%;
+
+    border:3px solid #c9a227;
+
+    color:#c9a227;
+
+    font-size:8px;
+
+    font-weight:bold;
+
+    text-align:center;
+
+    padding-top:15px;
+
+    line-height:1.4;
+}
+
+/* ======================
+   SIGNATURES
+====================== */
+
+.signatures{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-top:15px;
+}
+
+.signature-box{
+
+    width:240px;
+
+    text-align:center;
+}
+
+.signature-line{
+
+    border-top:1px solid #111827;
+
+    margin-bottom:5px;
+}
+
+.signature-name{
+
+    font-size:12px;
+
+    font-weight:bold;
+}
+
+.signature-title{
+
+    font-size:10px;
+
+    color:#666;
+}
+
+/* ======================
+   BAS
+====================== */
+
+.info{
+
+    margin-top:10px;
+
+    padding-top:8px;
+
+    border-top:1px solid #c9a227;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    font-size:10px;
+
+    color:#666;
+}
+
+</style>
+
 </head>
 <body>
-    <div class="certificate">
-        {% if logo_base64 %}
-            <img src="{{ logo_base64 }}" class="logo" alt="Logo">
-        {% endif %}
-        
-        <h1>🎓 Certificat de réussite</h1>
-        <p>Ce certificat est décerné à</p>
-        <div class="student-name">{{ user.fullName|default(user.email) }}</div>
-        
-        {% if user.age or user.city %}
-            <div class="student-info">
-                {% if user.age %}Âge : {{ user.age }} ans{% endif %}
-                {% if user.age and user.city %} | {% endif %}
-                {% if user.city %}Ville : {{ user.city }}{% endif %}
+
+<div class="certificate">
+
+    <div class="outer-line"></div>
+
+    <div class="inner-line"></div>
+
+    <div class="content">
+
+        <!-- HEADER -->
+
+        <div class="header">
+
+            <div class="logo-zone">
+
+                {% if logo_base64 %}
+                    <img src="{{ logo_base64 }}" class="logo-image" alt="CyberLeimen">
+                {% endif %}
+
             </div>
-        {% endif %}
-        
-        <p>pour avoir suivi avec succès la formation</p>
-        <div class="course-title">{{ course.title }}</div>
-        <p>et validé l’ensemble des modules et quiz.</p>
-        
-        <div class="date">Délivré le {{ date|date('d/m/Y') }}</div>
-        <div class="signature">Cyber Formation Maroc</div>
-        <div class="certificate-number">N° {{ certificateNumber }}</div>
-        <div class="footer">Formation certifiante – Accès à vie</div>
+
+            <div class="header-center">
+
+                <div class="small-title">
+                    ACADÉMIE DE FORMATION PROFESSIONNELLE
+                </div>
+
+                <div class="main-title">
+                    CYBERLEIMEN
+                </div>
+
+            </div>
+
+            <div class="header-right">
+            </div>
+
+        </div>
+
+        <!-- TITRE -->
+
+        <div class="title-section">
+
+            <div class="certificate-title">
+                CERTIFICAT
+            </div>
+
+            <div class="certificate-subtitle">
+                DE RÉUSSITE
+            </div>
+
+            <div class="gold-line"></div>
+
+        </div>
+
+        <!-- CONTENU -->
+
+        <div class="body-section">
+
+            <div class="awarded">
+                Ce certificat est décerné à
+            </div>
+
+            <div class="recipient-name">
+                {{ user_name }}
+            </div>
+
+            <div class="name-line"></div>
+
+            <div class="course-label">
+                Pour avoir complété avec succès la formation
+            </div>
+
+            <div class="course-name">
+                {{ course_name }}
+            </div>
+
+            <div class="message">
+
+                Le titulaire de ce certificat a satisfait à toutes les exigences pédagogiques de la formation et a démontré les compétences nécessaires dans le domaine étudié.
+
+                <br><br>
+
+                CyberLeimen reconnaît officiellement cette réussite et félicite le participant pour son engagement, sa persévérance et son professionnalisme.
+
+            </div>
+
+        </div>
+
+        <!-- SCEAU -->
+
+        <div class="seal">
+
+            CERTIFIÉ<br>
+            OFFICIEL<br>
+            CYBERLEIMEN
+
+        </div>
+
+        <!-- SIGNATURES -->
+
+        <div class="signatures">
+
+            <div class="signature-box">
+
+                <div class="signature-line"></div>
+
+                <div class="signature-name">
+                    Abdelaziz Mostafaoui
+                </div>
+
+                <div class="signature-title">
+                    Fondateur & Formateur Principal
+                </div>
+
+            </div>
+
+            <div class="signature-box">
+
+                <div class="signature-line"></div>
+
+                <div class="signature-name">
+                    Direction Académique
+                </div>
+
+                <div class="signature-title">
+                    CyberLeimen
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BAS DE PAGE -->
+
+        <div class="info">
+
+            <div>
+                Certificat N° {{ certificate_number }}
+            </div>
+
+            <div>
+                Date : {{ completion_date }}
+            </div>
+
+        </div>
+
     </div>
+
+</div>
+
 </body>
+
 </html>
